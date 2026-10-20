@@ -1,0 +1,25 @@
+{
+  "name": "rea-fit",
+  "private": true,
+  "version": "1.0.0",
+  "description": "REA Fit — a Hevy-inspired free workout tracker & gym logger for the web",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test:logic": "vite build --ssr scripts/logic-test.ts --outDir .smoke-logic --logLevel error && node .smoke-logic/logic-test.js",
+    "test:render": "vite build --ssr scripts/ssr-smoke.tsx --outDir .smoke --logLevel error && node .smoke/ssr-smoke.js"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  }
+}
