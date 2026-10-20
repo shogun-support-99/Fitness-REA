@@ -4,6 +4,7 @@ import { useUI } from '../uiContext'
 import { Icon } from '../../components/icons'
 import { Confirm } from '../../components/ui'
 import { LineChart } from '../../components/charts'
+import { gifUrl } from '../../data/exercises'
 import type { LoggedSet, Workout } from '../../lib/types'
 import {
   bestSetE1RM,
@@ -90,6 +91,13 @@ export default function ExerciseDetail({ id }: { id: string }) {
       </header>
 
       <div className="ex-detail">
+        {ex.media && (
+          <figure className="ex-media">
+            <img src={gifUrl(ex.media)} alt={`${ex.name} — exercise animation`} loading="lazy" />
+            <figcaption>Exercise animation © Gym visual</figcaption>
+          </figure>
+        )}
+
         <div className="chip-row">
           <span className="chip chip-static">{ex.equipment}</span>
           <span className="chip chip-static">{ex.primary}</span>
@@ -100,6 +108,17 @@ export default function ExerciseDetail({ id }: { id: string }) {
           ))}
           {ex.custom && <span className="chip chip-accent">custom</span>}
         </div>
+
+        {ex.instructions && ex.instructions.length > 0 && (
+          <div className="card steps-card">
+            <h3 className="card-title">How to do it</h3>
+            <ol className="steps">
+              {ex.instructions.map((s, i) => (
+                <li key={i}>{s}</li>
+              ))}
+            </ol>
+          </div>
+        )}
 
         {best ? (
           <div className="card pr-card">

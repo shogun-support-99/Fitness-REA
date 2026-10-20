@@ -463,7 +463,7 @@ export default function Landing() {
 
       <section className="stats-band">
         <div>
-          <strong>100+</strong>
+          <strong>1,300+</strong>
           <span>exercises built in</span>
         </div>
         <div>

@@ -1,5 +1,7 @@
 /** Logic tests: run with `npm run test:logic` */
-import { EXERCISES, searchExercises } from '../src/data/exercises'
+import { EXERCISES, MUSCLE_GROUPS, searchExercises, EQUIPMENTS } from '../src/data/exercises'
+import { DATASET_EXERCISES } from '../src/data/exercises-dataset'
+import { CURATED_ENRICHMENTS } from '../src/data/curated-enrichments'
 import { sampleRoutines, sampleWorkouts } from '../src/lib/seed'
 import { reducer, freshState } from '../src/lib/store'
 import type { AppState } from '../src/lib/types'
@@ -29,11 +31,26 @@ check('fmtWeight lb converts', fmtWeight(100, 'lb') === '220.5')
 check('fmtElapsed', fmtElapsed(754000) === '12:34')
 
 /* exercise db */
-check('100+ exercises', EXERCISES.length >= 100)
-check('unique ids', new Set(EXERCISES.map((e) => e.id)).size === EXERCISES.length)
+check('100+ curated exercises', EXERCISES.length >= 100)
+check('unique curated ids', new Set(EXERCISES.map((e) => e.id)).size === EXERCISES.length)
 check('search finds bench', searchExercises(EXERCISES, 'bench', 'all').some((e) => e.id === 'barbell-bench-press'))
 check('muscle filter works', searchExercises(EXERCISES, '', 'Chest').every((e) => e.primary === 'Chest' || e.secondary.includes('Chest')))
 check('cardio category exists', EXERCISES.filter((e) => e.category === 'cardio').length >= 8)
+
+/* dataset */
+const MUSCLES = new Set(MUSCLE_GROUPS.map((m) => m.id))
+const EQUIPS = new Set(EQUIPMENTS)
+check('1200+ dataset exercises', DATASET_EXERCISES.length >= 1200)
+check('dataset ids unique', new Set(DATASET_EXERCISES.map((e) => e.id)).size === DATASET_EXERCISES.length)
+check('dataset muscle groups valid', DATASET_EXERCISES.every((e) => MUSCLES.has(e.primary)))
+check('dataset equipment valid', DATASET_EXERCISES.every((e) => EQUIPS.has(e.equipment)))
+check('dataset mostly has instructions', DATASET_EXERCISES.filter((e) => (e.instructions ?? []).length > 0).length >= DATASET_EXERCISES.length * 0.95)
+check('dataset media stems well-formed', DATASET_EXERCISES.every((e) => !e.media || /^[A-Za-z0-9-_]+$/.test(e.media)))
+check('no name collisions curated vs dataset', !DATASET_EXERCISES.some((d) => EXERCISES.some((c) => c.name.toLowerCase() === d.name.toLowerCase())))
+const squat = EXERCISES.find((e) => e.id === 'back-squat')!
+check('curated back-squat enriched (media + instructions)', !!squat.media && (squat.instructions ?? []).length >= 3)
+check('enrichment keys are curated ids', Object.keys(CURATED_ENRICHMENTS).every((k) => EXERCISES.some((e) => e.id === k)))
+check('dataset search across merged list', searchExercises([...EXERCISES, ...DATASET_EXERCISES], 'squat', 'all', 'Barbell').length > 20)
 
 /* seed data integrity */
 const sw = sampleWorkouts()

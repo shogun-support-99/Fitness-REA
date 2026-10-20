@@ -80,11 +80,19 @@ src/
 scripts/          logic + render tests
 ```
 
-## Disclaimer
+## Disclaimer & credits
 
 This is an independent, open-source demo built as a tribute to [Hevy](https://www.hevyapp.com/)'s
 excellent design. It is **not affiliated with or endorsed by Hevy**, and all content and code here
 were written from scratch.
+
+**Exercise data** (names, muscles, equipment, instructions) comes from
+[hasaneyldrm/exercises-dataset](https://github.com/hasaneyldrm/exercises-dataset), released under
+the **MIT License** — see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+
+**Exercise media** (thumbnail images and animation GIFs, hotlinked at 180×180 from the CDN) is the
+property of **© Gym visual — <https://gymvisual.com/>**, used with attribution and not for
+commercial use.
 
 ## License
 

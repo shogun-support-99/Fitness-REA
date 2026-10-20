@@ -21,6 +21,7 @@ export function freshState(): AppState {
     workouts: [],
     routines: [],
     customs: [],
+    dataset: [],
     settings: { ...DEFAULT_SETTINGS },
     liked: [],
     comments: {},
@@ -62,6 +63,7 @@ export type Action =
   | { t: 'toggleLike'; id: string }
   | { t: 'addComment'; id: string; text: string }
   | { t: 'toggleFollow'; handle: string }
+  | { t: 'datasetLoaded'; exercises: Exercise[] }
 
 export function reducer(state: AppState, action: Action): AppState {
   switch (action.t) {
@@ -204,7 +206,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     try {
-      localStorage.setItem(KEY, JSON.stringify(state))
+      // the dataset chunk is re-imported on load — never persist it
+      const { dataset: _dataset, ...slim } = state
+      localStorage.setItem(KEY, JSON.stringify(slim))
     } catch {
       /* storage full / unavailable */
     }
@@ -215,7 +219,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, [state.settings.theme])
 
   const value = useMemo<StoreCtx>(() => {
-    const allExercises = [...EXERCISES, ...state.customs]
+    const allExercises = [...EXERCISES, ...state.dataset, ...state.customs]
     return {
       state,
       dispatch,

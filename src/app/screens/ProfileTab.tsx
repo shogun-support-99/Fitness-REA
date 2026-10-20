@@ -228,8 +228,12 @@ export default function ProfileTab() {
         <div>
           <strong>REA Fit</strong>
           <p className="muted small">
-            v1.0 · An open-source, Hevy-inspired workout tracker. Your data never leaves this
-            device.
+            v1.1 · An open-source, Hevy-inspired workout tracker. Your data never leaves this
+            device. Exercise data from{' '}
+            <a href="https://github.com/hasaneyldrm/exercises-dataset" target="_blank" rel="noreferrer">
+              exercises-dataset
+            </a>{' '}
+            (MIT) · Exercise media © Gym visual.
           </p>
         </div>
       </div>

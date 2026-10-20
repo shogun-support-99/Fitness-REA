@@ -36,6 +36,10 @@ export interface Exercise {
   secondary: MuscleGroup[]
   category: 'strength' | 'cardio'
   custom?: boolean
+  /** step-by-step instructions (English), from the dataset */
+  instructions?: string[]
+  /** media file stem — resolves to CDN image (jpg) and animation (gif) URLs */
+  media?: string
 }
 
 /** One logged set. Weights are always stored in kilograms. */
@@ -114,6 +118,8 @@ export interface AppState {
   workouts: Workout[]
   routines: Routine[]
   customs: Exercise[]
+  /** extra exercises loaded lazily from the bundled dataset chunk */
+  dataset: Exercise[]
   settings: Settings
   liked: string[]
   comments: Record<string, string[]>
