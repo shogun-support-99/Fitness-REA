@@ -1,4 +1,5 @@
 import type { Equipment, Exercise, MuscleGroup } from '../lib/types'
+import { CURATED_ENRICHMENTS } from './curated-enrichments'
 
 export const MUSCLE_GROUPS: { id: MuscleGroup; label: string }[] = [
   { id: 'Chest', label: 'Chest' },
@@ -163,19 +164,37 @@ const ROWS: Row[] = [
   ['stair-climber', 'Stair Climber', 'Machine', 'Cardio', ['Glutes'], 'cardio'],
 ]
 
-export const EXERCISES: Exercise[] = ROWS.map(([id, name, equipment, primary, secondary, category]) => ({
-  id,
-  name,
-  equipment,
-  primary,
-  secondary,
-  category: category ?? 'strength',
-}))
+export const EXERCISES: Exercise[] = ROWS.map(([id, name, equipment, primary, secondary, category]) => {
+  const ex: Exercise = {
+    id,
+    name,
+    equipment,
+    primary,
+    secondary,
+    category: category ?? 'strength',
+  }
+  const enrichment = CURATED_ENRICHMENTS[id]
+  return enrichment ? { ...ex, instructions: enrichment.instructions, media: enrichment.media } : ex
+})
 
-export function searchExercises(all: Exercise[], q: string, muscle: MuscleGroup | 'all'): Exercise[] {
+/**
+ * Exercise media is hotlinked (never bundled) from the public dataset repo.
+ * Media (c) Gym visual - https://gymvisual.com/ (180x180, attribution required).
+ */
+export const DATASET_CDN = 'https://cdn.jsdelivr.net/gh/hasaneyldrm/exercises-dataset@main/'
+export const imgUrl = (media: string) => `${DATASET_CDN}images/${media}.jpg`
+export const gifUrl = (media: string) => `${DATASET_CDN}videos/${media}.gif`
+
+export function searchExercises(
+  all: Exercise[],
+  q: string,
+  muscle: MuscleGroup | 'all',
+  equipment: Equipment | 'all' = 'all'
+): Exercise[] {
   const query = q.trim().toLowerCase()
   return all.filter((e) => {
     if (muscle !== 'all' && e.primary !== muscle && !e.secondary.includes(muscle)) return false
+    if (equipment !== 'all' && e.equipment !== equipment) return false
     if (!query) return true
     return (
       e.name.toLowerCase().includes(query) ||

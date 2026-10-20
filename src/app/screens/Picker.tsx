@@ -2,8 +2,10 @@ import { useMemo, useState } from 'react'
 import { useStore } from '../../lib/store'
 import { useUI } from '../uiContext'
 import { Icon } from '../../components/icons'
-import { MUSCLE_GROUPS, searchExercises } from '../../data/exercises'
+import { MUSCLE_GROUPS, imgUrl, searchExercises } from '../../data/exercises'
 import type { MuscleGroup } from '../../lib/types'
+
+const RENDER_CAP = 60
 
 export default function Picker({ onPick }: { onPick: (ids: string[]) => void }) {
   const { allExercises } = useStore()
@@ -13,6 +15,7 @@ export default function Picker({ onPick }: { onPick: (ids: string[]) => void }) 
   const [selected, setSelected] = useState<string[]>([])
 
   const list = useMemo(() => searchExercises(allExercises, q, muscle), [allExercises, q, muscle])
+  const shown = list.slice(0, RENDER_CAP)
 
   const toggle = (id: string) =>
     setSelected((sel) => (sel.includes(id) ? sel.filter((i) => i !== id) : [...sel, id]))
@@ -41,7 +44,7 @@ export default function Picker({ onPick }: { onPick: (ids: string[]) => void }) 
           <Icon name="search" size={16} />
           <input
             autoFocus
-            placeholder="Search exercises…"
+            placeholder={`Search ${allExercises.length} exercises…`}
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
@@ -66,12 +69,19 @@ export default function Picker({ onPick }: { onPick: (ids: string[]) => void }) 
       </div>
 
       <div className="picker-list">
-        {list.map((ex) => {
+        {shown.map((ex) => {
           const on = selected.includes(ex.id)
           return (
             <button key={ex.id} className={`picker-row ${on ? 'picker-row-on' : ''}`} onClick={() => toggle(ex.id)}>
               <span className={`picker-check ${on ? 'picker-check-on' : ''}`}>
                 {on && <Icon name="check" size={13} strokeWidth={3} />}
+              </span>
+              <span className="picker-thumb">
+                {ex.media ? (
+                  <img loading="lazy" src={imgUrl(ex.media)} alt="" />
+                ) : (
+                  <Icon name="dumbbell" size={16} />
+                )}
               </span>
               <span className="picker-name">
                 {ex.name}
@@ -83,6 +93,11 @@ export default function Picker({ onPick }: { onPick: (ids: string[]) => void }) 
             </button>
           )
         })}
+        {list.length > RENDER_CAP && (
+          <p className="picker-cap">
+            Showing {RENDER_CAP} of {list.length} — keep typing to narrow it down.
+          </p>
+        )}
         {list.length === 0 && <p className="picker-empty">No exercises match “{q}”.</p>}
       </div>
 

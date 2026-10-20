@@ -988,6 +988,62 @@
   padding: 14px 14px 8px;
 }
 
+/* exercise media + instructions */
+.ex-media {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 0 2px;
+}
+.ex-media img {
+  width: 220px;
+  height: 220px;
+  max-width: 100%;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--card2);
+  object-fit: cover;
+}
+.ex-media figcaption {
+  font-size: 11px;
+  color: var(--text3);
+}
+.steps-card {
+  padding: 14px 16px;
+}
+.steps {
+  list-style: none;
+  counter-reset: step;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.steps li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 32px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text2);
+}
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-size: 11.5px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .wd-actions {
   display: flex;
   flex-direction: column;

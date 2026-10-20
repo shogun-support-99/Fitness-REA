@@ -68,6 +68,31 @@ const seedState = {
     },
   ],
   customs: [],
+  dataset: [
+    {
+      id: 'db-0001',
+      name: '3/4 Sit-Up',
+      equipment: 'Bodyweight',
+      primary: 'Core',
+      secondary: [],
+      category: 'strength',
+      instructions: [
+        'Lie flat on your back with your knees bent and feet flat on the ground.',
+        'Place your hands behind your head with your elbows pointing outwards.',
+      ],
+      media: '0001-2gPfomN',
+    },
+    {
+      id: 'db-0900',
+      name: 'Test Kettlebell Swing',
+      equipment: 'Kettlebell',
+      primary: 'Full Body',
+      secondary: ['Glutes', 'Hamstrings'],
+      category: 'strength',
+      instructions: ['Hinge at the hips.'],
+      media: '0002-Hy9D21L',
+    },
+  ],
   settings: {
     name: 'Test',
     unit: 'kg',
@@ -149,6 +174,7 @@ render('Picker', wrap(<Picker onPick={() => {}} />))
 render('CustomExercise', wrap(<CustomExercise />))
 render('ExerciseDetail', wrap(<ExerciseDetail id="barbell-bench-press" />))
 render('ExerciseDetailCardio', wrap(<ExerciseDetail id="treadmill-run" />))
+render('ExerciseDetailDataset', wrap(<ExerciseDetail id="db-0001" />))
 render('WorkoutDetail', wrap(<WorkoutDetail id="w1" />))
 render('RoutineDetail', wrap(<RoutineDetail id="r1" />))
 render('RoutineEditorEdit', wrap(<RoutineEditor id="r1" />))

@@ -121,12 +121,21 @@ function RestBanner({
 }
 
 export default function AppShell() {
-  const { state } = useStore()
+  const { state, dispatch } = useStore()
   const [tab, setTab] = useState<Tab>('home')
   const [stack, setStack] = useState<Screen[]>([])
   const [rest, setRest] = useState<RestState | null>(null)
   const [toast, setToast] = useState<{ msg: string; id: number } | null>(null)
   const toastTimer = useRef<number | null>(null)
+
+  // Load the full 1,300+ exercise dataset chunk after first paint.
+  useEffect(() => {
+    if (state.dataset.length > 0) return
+    import('../data/exercises-dataset')
+      .then((m) => dispatch({ t: 'datasetLoaded', exercises: m.DATASET_EXERCISES }))
+      .catch(() => console.warn('exercise dataset chunk failed to load'))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const showToast = useCallback((msg: string) => {
     setToast({ msg, id: Date.now() })
