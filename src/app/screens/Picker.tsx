@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react'
 import { useStore } from '../../lib/store'
 import { useUI } from '../uiContext'
 import { Icon } from '../../components/icons'
-import { MUSCLE_GROUPS, imgUrl, searchExercises } from '../../data/exercises'
+import { MUSCLE_GROUPS, searchExercises } from '../../data/exercises'
+import { ExerciseThumb } from '../../components/media'
 import type { MuscleGroup } from '../../lib/types'
 
 const RENDER_CAP = 60
@@ -77,11 +78,7 @@ export default function Picker({ onPick }: { onPick: (ids: string[]) => void }) 
                 {on && <Icon name="check" size={13} strokeWidth={3} />}
               </span>
               <span className="picker-thumb">
-                {ex.media ? (
-                  <img loading="lazy" src={imgUrl(ex.media)} alt="" />
-                ) : (
-                  <Icon name="dumbbell" size={16} />
-                )}
+                <ExerciseThumb media={ex.media} size={16} />
               </span>
               <span className="picker-name">
                 {ex.name}

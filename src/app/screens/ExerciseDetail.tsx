@@ -4,11 +4,10 @@ import { useUI } from '../uiContext'
 import { Icon } from '../../components/icons'
 import { Confirm } from '../../components/ui'
 import { LineChart } from '../../components/charts'
-import { gifUrl } from '../../data/exercises'
+import { ExerciseGif } from '../../components/media'
 import type { LoggedSet, Workout } from '../../lib/types'
 import {
   bestSetE1RM,
-  e1RM,
   fmtDate,
   fmtNum,
   fmtVolume,
@@ -91,11 +90,13 @@ export default function ExerciseDetail({ id }: { id: string }) {
       </header>
 
       <div className="ex-detail">
-        {ex.media && (
-          <figure className="ex-media">
-            <img src={gifUrl(ex.media)} alt={`${ex.name} — exercise animation`} loading="lazy" />
-            <figcaption>Exercise animation © Gym visual</figcaption>
-          </figure>
+        {ex.media ? (
+          <ExerciseGif media={ex.media} name={ex.name} />
+        ) : (
+          <div className="ex-media-empty" role="img" aria-label="No animation available">
+            <Icon name="dumbbell" size={26} />
+            <span>No animation for this one yet</span>
+          </div>
         )}
 
         <div className="chip-row">
@@ -131,10 +132,7 @@ export default function ExerciseDetail({ id }: { id: string }) {
                   ? `${fmtWeight(best.weight, unit)} ${unit} × ${best.reps}`
                   : `${best.reps} reps`}
               </strong>
-              <span>
-                Personal record · est. 1RM {fmtWeight(bestE1RM, unit)} {unit} · e1RM{' '}
-                {Math.round(e1RM(best.weight, best.reps)) > 0 ? '' : ''}
-              </span>
+              <span>Personal record · est. 1RM {fmtWeight(bestE1RM, unit)} {unit}</span>
             </div>
           </div>
         ) : (

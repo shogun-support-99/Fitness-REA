@@ -28,6 +28,271 @@ export const CURATED_ENRICHMENTS: Record<string, { instructions: string[]; media
   ],
   "media": "0047-3TZduzM"
  },
+ "bench-dip": {
+  "instructions": [
+   "Sit on a bench with your hands gripping the edge, fingers pointing forward.",
+   "Slide your butt off the bench, supporting your weight with your hands.",
+   "Lower your body by bending your elbows until your upper arms are parallel to the floor.",
+   "Push yourself back up to the starting position by straightening your arms.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0830-MU9HnE7"
+ },
+ "cable-crunch": {
+  "instructions": [
+   "Attach a rope handle to a high pulley and kneel down facing away from the machine.",
+   "Hold the rope handle with both hands and place it behind your head, keeping your elbows out to the sides.",
+   "Keeping your hips stationary, flex your waist and crunch your torso down towards your thighs.",
+   "Pause for a moment at the bottom, then slowly return to the starting position.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0175-WW95auq"
+ },
+ "cable-overhead-extension": {
+  "instructions": [
+   "Attach a rope to a cable machine at a high position.",
+   "Stand facing away from the machine with your feet shoulder-width apart.",
+   "Grasp the rope with both hands, palms facing each other, and bring your hands above your head.",
+   "Keep your upper arms close to your head and your elbows pointing forward.",
+   "Slowly lower the rope behind your head by bending your elbows.",
+   "Pause for a moment, then extend your arms back up to the starting position.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0194-2IxROQ1"
+ },
+ "cable-rear-delt-fly": {
+  "instructions": [
+   "Attach a D-handle to each side of a cable machine at shoulder height.",
+   "Stand in the middle of the cable machine with your feet shoulder-width apart.",
+   "Grasp the handles with an overhand grip and extend your arms out to the sides, palms facing forward.",
+   "Keep a slight bend in your elbows and maintain a straight back throughout the exercise.",
+   "Engage your shoulder muscles and squeeze your shoulder blades together as you pull the handles towards the front of your body.",
+   "Pause for a moment at the peak of the movement, then slowly return to the starting position.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0225-P5p0j8B"
+ },
+ "clean-and-jerk": {
+  "instructions": [
+   "Stand with your feet shoulder-width apart and the barbell on the floor in front of you.",
+   "Bend your knees and hinge at the hips to lower down and grip the barbell with an overhand grip, hands slightly wider than shoulder-width apart.",
+   "Drive through your heels and extend your hips and knees to lift the barbell off the floor, keeping it close to your body.",
+   "As the barbell reaches your thighs, explosively extend your hips, shrug your shoulders, and pull the barbell up towards your chest.",
+   "As the barbell reaches chest height, quickly drop under it and catch it at shoulder level, with your elbows pointing forward and your palms facing up.",
+   "From the catch position, press the barbell overhead by extending your arms and pushing the barbell straight up.",
+   "Lower the barbell back down to the starting position and repeat for the desired number of repetitions."
+  ],
+  "media": "0028-SGY8Zui"
+ },
+ "decline-barbell-bench-press": {
+  "instructions": [
+   "Lie on a decline bench with your feet secured and your head lower than your hips.",
+   "Grasp the barbell with an overhand grip slightly wider than shoulder-width apart.",
+   "Unrack the barbell and lower it slowly towards your chest, keeping your elbows tucked in.",
+   "Pause for a moment at the bottom, then push the barbell back up to the starting position.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0033-GrO65fd"
+ },
+ "decline-dumbbell-press": {
+  "instructions": [
+   "Lie down on a decline bench with your feet secured and your head lower than your hips.",
+   "Hold a dumbbell in each hand and extend your arms straight up above your chest, palms facing forward.",
+   "Lower the dumbbells slowly to the sides of your chest, keeping your elbows at a 90-degree angle.",
+   "Push the dumbbells back up to the starting position, fully extending your arms.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0301-DwhEmmE"
+ },
+ "elliptical": {
+  "instructions": [
+   "Adjust the resistance level and incline of the elliptical machine to your desired settings.",
+   "Step onto the pedals of the machine and grip the handles lightly.",
+   "Begin by pushing down with your feet and pulling the handles towards your body.",
+   "Continue this motion, alternating between pushing and pulling, to simulate a walking or running motion.",
+   "Maintain a steady pace and keep your core engaged throughout the exercise.",
+   "Continue for the desired duration of your cardio workout.",
+   "Gradually decrease the intensity and speed of the machine before stepping off."
+  ],
+  "media": "2141-rjtuP6X"
+ },
+ "hack-squat": {
+  "instructions": [
+   "Adjust the sled machine to a comfortable position for your height.",
+   "Stand with your feet shoulder-width apart on the platform, toes slightly pointed outwards.",
+   "Hold onto the handles or bars for stability.",
+   "Lower your body by bending your knees and hips, keeping your back straight and chest up.",
+   "Continue lowering until your thighs are parallel to the ground or slightly below.",
+   "Pause for a moment, then push through your heels to raise your body back up to the starting position.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0743-Qa55kX1"
+ },
+ "incline-dumbbell-curl": {
+  "instructions": [
+   "Set an incline bench to a 45-degree angle and sit on it with a dumbbell in each hand, palms facing forward.",
+   "Rest your upper arms on the incline bench and let your elbows hang down, fully extending your arms.",
+   "Keeping your upper arms stationary, exhale and curl the weights while contracting your biceps.",
+   "Continue to raise the dumbbells until your biceps are fully contracted and the dumbbells are at shoulder level.",
+   "Hold the contracted position for a brief pause as you squeeze your biceps.",
+   "Inhale and slowly begin to lower the dumbbells back to the starting position.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0318-ae9UoXQ"
+ },
+ "incline-dumbbell-fly": {
+  "instructions": [
+   "Set an incline bench to a 45-degree angle.",
+   "Sit on the bench with a dumbbell in each hand, palms facing each other.",
+   "Lie back on the bench and press the dumbbells up to the starting position, directly above your chest.",
+   "Lower the dumbbells out to the sides in a wide arc until you feel a stretch in your chest.",
+   "Pause for a moment, then squeeze your chest muscles to bring the dumbbells back up to the starting position.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0319-ESOd5Pl"
+ },
+ "leg-press-calf-raise": {
+  "instructions": [
+   "Adjust the seat of the leg press machine so that your knees are slightly bent when your feet are on the sled.",
+   "Place your feet shoulder-width apart on the sled, with your toes pointing forward.",
+   "Release the safety handles and push the sled away from you by extending your knees and ankles.",
+   "Pause for a moment at the top of the movement, then slowly lower the sled back down by bending your knees and ankles.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "1391-ykHcWme"
+ },
+ "outdoor-run": {
+  "instructions": [
+   "Start by standing upright with your feet hip-width apart.",
+   "Engage your core and keep your upper body relaxed.",
+   "Begin jogging in place, lifting your knees up towards your chest and landing softly on the balls of your feet.",
+   "Maintain a steady pace and continue jogging for the desired duration or distance.",
+   "Remember to breathe deeply and maintain good posture throughout the exercise."
+  ],
+  "media": "0685-oLrKqDH"
+ },
+ "overhead-tricep-extension": {
+  "instructions": [
+   "Stand with your feet shoulder-width apart and hold a barbell with an overhand grip.",
+   "Raise the barbell overhead, fully extending your arms.",
+   "Keeping your upper arms close to your head, slowly lower the barbell behind your head by bending your elbows.",
+   "Pause for a moment, then raise the barbell back to the starting position by extending your arms.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0109-dZl9Q27"
+ },
+ "plank": {
+  "instructions": [
+   "Start by lying face down on the floor.",
+   "Place your forearms on the ground, with your elbows directly under your shoulders.",
+   "Extend your legs straight out behind you, with your toes on the ground.",
+   "Engage your core and lift your body off the ground, balancing on your forearms and toes.",
+   "Keep your body in a straight line from your head to your heels.",
+   "Hold this position for the desired amount of time.",
+   "Lower your body back down to the starting position.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "2135-VBAWRPG"
+ },
+ "rear-delt-fly": {
+  "instructions": [
+   "Stand with your feet shoulder-width apart and hold a dumbbell in each hand.",
+   "Bend your knees slightly and hinge forward at the hips, keeping your back straight.",
+   "Extend your arms straight down in front of you, palms facing each other.",
+   "Keeping a slight bend in your elbows, raise your arms out to the sides until they are parallel to the ground.",
+   "Pause for a moment at the top, then slowly lower your arms back down to the starting position.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0383-EAs3xL9"
+ },
+ "reverse-wrist-curl": {
+  "instructions": [
+   "Sit on a bench with your feet flat on the ground and hold a barbell with an overhand grip, palms facing down.",
+   "Rest your forearms on your thighs, allowing your wrists to hang off the edge.",
+   "Slowly curl your wrists upward, bringing the barbell towards your body.",
+   "Pause for a moment at the top, then slowly lower the barbell back down to the starting position.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0082-LsZkfU6"
+ },
+ "rope-pushdown": {
+  "instructions": [
+   "Attach a rope attachment to a high pulley on a cable machine.",
+   "Stand facing the machine with your feet shoulder-width apart and a slight bend in your knees.",
+   "Grasp the rope with an overhand grip, palms facing each other.",
+   "Keep your elbows close to your sides and your upper arms stationary throughout the exercise.",
+   "Exhale and push the rope downward by extending your elbows until your arms are fully extended.",
+   "Pause for a moment, then inhale and slowly return to the starting position by allowing your elbows to flex.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0200-dU605di"
+ },
+ "side-plank": {
+  "instructions": [
+   "Start by lying on your side with your legs extended and stacked on top of each other.",
+   "Prop yourself up on your forearm, keeping your elbow directly below your shoulder.",
+   "Engage your core and lift your hips off the ground, creating a straight line from your head to your feet.",
+   "While maintaining the side plank position, lift your top leg towards the ceiling, keeping it straight.",
+   "Slowly lower your leg back down to the starting position.",
+   "Repeat for the desired number of repetitions, then switch sides."
+  ],
+  "media": "1775-VO2qeJg"
+ },
+ "single-leg-calf-raise": {
+  "instructions": [
+   "Stand on the edge of a step or platform with your heels hanging off and your toes on the step.",
+   "Hold a dumbbell in one hand and place your other hand on a wall or railing for support.",
+   "Raise your heel as high as possible, lifting your body up onto your toes.",
+   "Pause for a moment at the top, then slowly lower your heel back down below the step.",
+   "Repeat for the desired number of repetitions, then switch to the other leg."
+  ],
+  "media": "0409-1kB3Wmk"
+ },
+ "snatch": {
+  "instructions": [
+   "Stand with your feet shoulder-width apart, toes pointing slightly outwards.",
+   "Hold the barbell with an overhand grip, hands slightly wider than shoulder-width apart.",
+   "Bend your knees and lower your hips into a squat position, keeping your back straight and chest up.",
+   "Explosively extend your hips, knees, and ankles, driving the barbell upwards.",
+   "As the barbell reaches chest level, pull it upwards with your arm, keeping it close to your body.",
+   "Rotate your elbow under the barbell and extend your arm fully overhead, locking out your elbow.",
+   "Lower the barbell back down to the starting position in a controlled manner.",
+   "Repeat for the desired number of repetitions, then switch arms."
+  ],
+  "media": "0067-xHKN2s8"
+ },
+ "spider-curl": {
+  "instructions": [
+   "Stand with your feet shoulder-width apart and hold the ez barbell with an underhand grip, palms facing up.",
+   "Rest your upper arms on a preacher bench or stability ball, allowing your elbows to hang down.",
+   "Keeping your upper arms stationary, exhale and curl the barbell up towards your shoulders.",
+   "Pause for a moment at the top, squeezing your biceps.",
+   "Inhale and slowly lower the barbell back to the starting position.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0454-Ye5Qxb0"
+ },
+ "straight-arm-pulldown": {
+  "instructions": [
+   "Attach a straight bar to the high pulley of a cable machine.",
+   "Stand facing the machine with your feet shoulder-width apart.",
+   "Grasp the bar with an overhand grip, keeping your arms straight and your palms facing down.",
+   "Engage your lats and pull the bar down towards your thighs, keeping your arms straight throughout the movement.",
+   "Pause for a moment at the bottom, then slowly return the bar to the starting position.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0238-x69MAlq"
+ },
+ "thruster": {
+  "instructions": [
+   "Start by standing with your feet shoulder-width apart, holding a barbell at shoulder height with an overhand grip.",
+   "Lower into a squat position by bending your knees and pushing your hips back.",
+   "As you reach the bottom of the squat, explosively drive through your heels to stand up, simultaneously pressing the barbell overhead.",
+   "Lower the barbell back to shoulder height as you lower back into the squat position.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "3305-f7Y9eDZ"
+ },
  "back-squat": {
   "instructions": [
    "Stand with your feet shoulder-width apart, toes slightly turned out.",
@@ -469,6 +734,16 @@ export const CURATED_ENRICHMENTS: Record<string, { instructions: string[]; media
   ],
   "media": "0472-I3tsCnC"
  },
+ "hanging-knee-raise": {
+  "instructions": [
+   "Hang from a pull-up bar with your arms fully extended and your palms facing away from you.",
+   "Engage your core muscles and lift your knees towards your chest, bending at the hips and knees.",
+   "Pause for a moment at the top of the movement, squeezing your abs.",
+   "Slowly lower your legs back down to the starting position.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0011-03lzqwk"
+ },
  "russian-twist": {
   "instructions": [
    "Sit on the ground with your knees bent and feet flat on the floor.",
@@ -480,6 +755,17 @@ export const CURATED_ENRICHMENTS: Record<string, { instructions: string[]; media
    "Continue alternating sides for the desired number of repetitions."
   ],
   "media": "0687-XVDdcoj"
+ },
+ "ab-wheel-rollout": {
+  "instructions": [
+   "Kneel on the floor and place the wheel roller in front of you.",
+   "Place your hands on the handles of the wheel roller and extend your arms straight out in front of you.",
+   "Engage your core muscles and slowly roll the wheel forward, keeping your back straight and your abs tight.",
+   "Continue rolling forward until your body is fully extended and your arms are overhead.",
+   "Pause for a moment, then slowly roll the wheel back towards your knees, maintaining control and keeping your abs engaged.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0857-NAgVB3t"
  },
  "barbell-shrug": {
   "instructions": [
@@ -511,6 +797,17 @@ export const CURATED_ENRICHMENTS: Record<string, { instructions: string[]; media
   ],
   "media": "0289-SpYC0Kp"
  },
+ "incline-dumbbell-press": {
+  "instructions": [
+   "Set up an incline bench at a 45-degree angle.",
+   "Sit on the bench with your feet flat on the ground and your back pressed firmly against the bench.",
+   "Hold a dumbbell in each hand, palms facing forward, and lift them to shoulder height.",
+   "Slowly lower the dumbbells to the sides of your chest, keeping your elbows at a 90-degree angle.",
+   "Push the dumbbells back up to the starting position, fully extending your arms.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0314-ns0SIbU"
+ },
  "dumbbell-fly": {
   "instructions": [
    "Lie flat on a bench with a dumbbell in each hand, palms facing each other.",
@@ -520,6 +817,64 @@ export const CURATED_ENRICHMENTS: Record<string, { instructions: string[]; media
    "Repeat for the desired number of repetitions."
   ],
   "media": "0308-yz9nUhF"
+ },
+ "treadmill-run": {
+  "instructions": [
+   "Adjust the incline level on the treadmill to your desired intensity.",
+   "Stand on the treadmill with your feet shoulder-width apart.",
+   "Start walking at a comfortable pace, ensuring that you maintain proper form.",
+   "Engage your core muscles and keep your back straight throughout the exercise.",
+   "Continue walking on the incline treadmill for the desired duration of your cardio workout.",
+   "Gradually decrease the incline and speed of the treadmill to cool down before stopping."
+  ],
+  "media": "3666-rjiM4L3"
+ },
+ "indoor-cycling": {
+  "instructions": [
+   "Adjust the seat height and position on the stationary bike to ensure proper alignment.",
+   "Place your feet on the pedals and secure them with the straps if available.",
+   "Start pedaling at a comfortable pace, keeping your back straight and core engaged.",
+   "Maintain a steady rhythm and increase the resistance level if desired.",
+   "Continue pedaling for the desired duration of your cardio workout.",
+   "Cool down by gradually reducing your pace and resistance level.",
+   "Stretch your leg muscles after the workout to prevent tightness and promote recovery."
+  ],
+  "media": "0798-a8VDgLw"
+ },
+ "stair-climber": {
+  "instructions": [
+   "Adjust the stepmill machine to a comfortable level.",
+   "Step onto the machine and place your hands on the handrails for support.",
+   "Start walking by placing one foot on a step and then the other, alternating between legs.",
+   "Maintain an upright posture and engage your core muscles.",
+   "Continue walking for the desired duration or distance.",
+   "Gradually increase the intensity or speed as you become more comfortable with the exercise.",
+   "Remember to cool down and stretch after completing the exercise."
+  ],
+  "media": "2311-j9Q5crt"
+ },
+ "face-pull": {
+  "instructions": [
+   "Stand facing a cable machine with your feet shoulder-width apart.",
+   "Hold the cable attachment with both hands, palms facing each other, and step back to create tension in the cable.",
+   "Keep your back straight and your core engaged.",
+   "Pull the cable towards your body, squeezing your shoulder blades together.",
+   "Pause for a moment at the peak of the movement, then slowly release the cable back to the starting position.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0233-ZfyAGhK"
+ },
+ "t-bar-row": {
+  "instructions": [
+   "Adjust the seat height and footplate position to ensure proper alignment.",
+   "Sit on the machine with your chest against the pad and your feet flat on the footplate.",
+   "Grasp the handles with an overhand grip, slightly wider than shoulder-width apart.",
+   "Keep your back straight and engage your core.",
+   "Pull the handles towards your torso, squeezing your shoulder blades together.",
+   "Pause for a moment at the peak contraction, then slowly release the handles back to the starting position.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "0606-aaXr7ld"
  },
  "bulgarian-split-squat": {
   "instructions": [
@@ -706,6 +1061,31 @@ export const CURATED_ENRICHMENTS: Record<string, { instructions: string[]; media
   ],
   "media": "0074-za9Ni4z"
  },
+ "pendlay-row": {
+  "instructions": [
+   "Stand with your feet shoulder-width apart and your knees slightly bent.",
+   "Bend forward at the hips, keeping your back straight and your chest up.",
+   "Grasp the barbell with an overhand grip, slightly wider than shoulder-width apart.",
+   "Pull the barbell towards your upper abdomen, squeezing your shoulder blades together.",
+   "Lower the barbell back down to the starting position.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "3017-r0z6xzQ"
+ },
+ "turkish-get-up": {
+  "instructions": [
+   "Start by lying on your back with your legs extended and the kettlebell held in your right hand, arm fully extended above your shoulder.",
+   "Bend your right knee and place your right foot flat on the ground, keeping your left leg extended.",
+   "Pressing through your right foot, lift your hips off the ground, coming into a bridge position.",
+   "Slide your left leg underneath your body, bending your left knee and placing your left foot flat on the ground.",
+   "Rotate your torso to the left, bringing your left hand to the ground for support.",
+   "Pressing through your right foot and left hand, lift your torso off the ground, coming into a kneeling position.",
+   "From the kneeling position, stand up, keeping the kettlebell extended overhead.",
+   "Reverse the movement to return to the starting position.",
+   "Repeat the exercise on the other side, starting with the kettlebell in your left hand."
+  ],
+  "media": "0551-Ha7SZ3y"
+ },
  "mountain-climber": {
   "instructions": [
    "Start in a high plank position with your hands directly under your shoulders and your body in a straight line.",
@@ -725,6 +1105,16 @@ export const CURATED_ENRICHMENTS: Record<string, { instructions: string[]; media
    "Continue jumping for the desired duration or number of repetitions."
   ],
   "media": "2612-e1e76I2"
+ },
+ "crunch": {
+  "instructions": [
+   "Lie flat on your back with your knees bent and feet flat on the ground.",
+   "Place your hands behind your head with your elbows pointing outwards.",
+   "Engaging your abs, lift your upper body off the ground, curling forward until your torso is at a 45-degree angle.",
+   "Pause for a moment at the top, then slowly lower your upper body back down to the starting position.",
+   "Repeat for the desired number of repetitions."
+  ],
+  "media": "2429-FFRP97T"
  },
  "dumbbell-kickback": {
   "instructions": [
