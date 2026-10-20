@@ -1430,3 +1430,111 @@
 .tab-screen {
   animation: slideUp 0.22s ease;
 }
+
+/* ================= RESPONSIVE SHELL ================= */
+
+/* brand is desktop-sidebar only */
+.tabbar-brand {
+  display: none;
+}
+
+/* ---------- tablet ---------- */
+@media (min-width: 760px) {
+  .app-frame {
+    max-width: 640px;
+  }
+  .screen {
+    padding: 26px 26px 120px;
+  }
+  .list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------- desktop: sidebar navigation ---------- */
+@media (min-width: 1024px) {
+  .app-root {
+    padding: 24px 24px;
+  }
+  .app-frame {
+    max-width: 1180px;
+    width: 100%;
+    height: calc(100dvh - 48px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+  }
+  .app-scroll {
+    margin-left: 216px;
+  }
+  .screen.pushed {
+    left: 216px;
+  }
+  .screen {
+    padding: 32px 44px 120px;
+  }
+  .home,
+  .tab-screen {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .tabbar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 216px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 20px 14px calc(16px + env(safe-area-inset-bottom, 0px));
+    border-top: none;
+    border-right: 1px solid var(--border);
+    background: var(--panel);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .tabbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 17px;
+    letter-spacing: 0.01em;
+    padding: 4px 12px 18px;
+  }
+  .tabbar-brand b {
+    color: var(--accent-text);
+  }
+  .tab {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    padding: 12px 14px;
+  }
+  .list {
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  }
+  .picker {
+    max-width: 860px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .picker-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: start;
+  }
+  .picker-list > .picker-cap,
+  .picker-list > .picker-empty {
+    grid-column: 1 / -1;
+  }
+  .rest-banner {
+    left: 228px;
+  }
+  .toast {
+    left: calc(216px + (100% - 216px) / 2);
+  }
+}

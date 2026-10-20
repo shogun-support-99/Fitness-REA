@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useStore } from '../lib/store'
 import { beep, fmtClock } from '../lib/utils'
-import { Icon, type IconName } from '../components/icons'
+import { Icon, Logo, type IconName } from '../components/icons'
 import { UICtx, type Screen, type Tab } from './uiContext'
 import Home from './screens/Home'
 import RoutinesTab from './screens/RoutinesTab'
@@ -213,6 +213,12 @@ export default function AppShell() {
           )}
           {!top && (
             <nav className="tabbar">
+              <div className="tabbar-brand">
+                <Logo size={26} />
+                <span>
+                  REA<b>FIT</b>
+                </span>
+              </div>
               {TABS.map((t) => (
                 <button
                   key={t.id}
