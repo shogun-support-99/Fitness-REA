@@ -6,12 +6,14 @@ import { Avatar, Confirm, Segmented, Toggle } from '../../components/ui'
 import { BarChart } from '../../components/charts'
 import type { AppState } from '../../lib/types'
 import { downloadJSON, fmtVolume, weekStart, workoutStreak, workoutVolume } from '../../lib/utils'
+import { getAccount, session } from '../../lib/auth'
 
 export default function ProfileTab() {
   const { state, dispatch } = useStore()
   const ui = useUI()
   const fileRef = useRef<HTMLInputElement>(null)
   const [confirmClear, setConfirmClear] = useState(false)
+  const account = getAccount(session() ?? '')
   const { settings, workouts } = state
   const unit = settings.unit
 
@@ -69,6 +71,27 @@ export default function ProfileTab() {
           <span className="muted">
             {workouts.length} workout{workouts.length === 1 ? '' : 's'} logged
           </span>
+        </div>
+      </div>
+
+      <div className="card account-card">
+        <div className="account-who">
+          <Icon name="user" size={18} />
+          <div>
+            <strong>@{account?.handle ?? 'athlete'}</strong>
+            <span>
+              {account?.kind === 'guest' ? 'Guest account' : 'Local account'} · free forever · no
+              ads
+            </span>
+          </div>
+        </div>
+        <div className="account-actions">
+          <button className="btn btn-ghost btn-sm" onClick={ui.switchAccount}>
+            <Icon name="repeat" size={14} /> Switch
+          </button>
+          <button className="btn btn-ghost btn-sm" onClick={ui.logout}>
+            <Icon name="arrowRight" size={14} /> Log out
+          </button>
         </div>
       </div>
 

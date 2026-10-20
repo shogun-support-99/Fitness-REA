@@ -101,22 +101,23 @@ const seedState = {
     restAutoStart: true,
     sound: false,
   },
-  liked: [],
-  comments: {},
-  followed: [],
-  sampleLoaded: true,
 }
 
+const lsStore = new Map<string, string>()
+lsStore.set('reafit-data-smoke-test', JSON.stringify(seedState))
 ;(globalThis as any).localStorage = {
-  _s: JSON.stringify(seedState),
-  getItem() {
-    return this._s
+  getItem(k: string) {
+    return lsStore.get(k) ?? null
   },
-  setItem(_k: string, v: string) {
-    this._s = v
+  setItem(k: string, v: string) {
+    lsStore.set(k, String(v))
   },
-  removeItem() {},
-  clear() {},
+  removeItem(k: string) {
+    lsStore.delete(k)
+  },
+  clear() {
+    lsStore.clear()
+  },
 }
 
 import { StoreProvider } from '../src/lib/store'
@@ -145,11 +146,13 @@ const fakeUI: UIApi = {
   startRest() {},
   adjustRest() {},
   stopRest() {},
+  logout() {},
+  switchAccount() {},
 }
 
 function wrap(el: React.ReactElement) {
   return (
-    <StoreProvider>
+    <StoreProvider accountId="smoke-test">
       <UICtx.Provider value={fakeUI}>{el}</UICtx.Provider>
     </StoreProvider>
   )
@@ -162,7 +165,29 @@ function render(name: string, el: React.ReactElement) {
 }
 
 render('Landing', <Landing />)
-render('AppShell', <StoreProvider><AppShell /></StoreProvider>)
+
+import Login from '../src/app/screens/Login'
+import Contacts from '../src/app/screens/Contacts'
+import SharedPost from '../src/app/screens/SharedPost'
+import { encodeShared } from '../src/lib/share'
+render('Login', <Login onDone={() => {}} />)
+render('Contacts', wrap(<Contacts />))
+const demoCode = encodeShared(
+  { name: 'Maya Reyes', handle: 'maya.reyes', color: '#2f6bff' },
+  {
+    name: 'Push Day A',
+    startedAt: Date.now() - 7200000,
+    durationMin: 58,
+    volumeKg: 9240,
+    exercises: [
+      { name: 'Bench Press', sets: [{ weight: 80, reps: 5 }] },
+      { name: 'Incline DB Press', sets: [{ weight: 30, reps: 10 }] },
+    ],
+  }
+)
+render('SharedPost', <SharedPost code={demoCode} />)
+render('SharedPostBadCode', <SharedPost code="garbage!!" />)
+render('AppShell', <StoreProvider accountId="smoke-test"><AppShell onSignOut={() => {}} /></StoreProvider>)
 render('Home', wrap(<Home />))
 render('RoutinesTab', wrap(<RoutinesTab />))
 render('ExercisesTab', wrap(<ExercisesTab />))

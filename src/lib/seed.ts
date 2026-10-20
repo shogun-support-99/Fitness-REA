@@ -1,4 +1,4 @@
-import type { LoggedSet, Post, Routine, RoutineSet, Workout } from './types'
+import type { LoggedSet, Post, Routine, RoutineSet, SharedSet, Workout } from './types'
 import { uid } from './utils'
 
 const DAY = 86400000
@@ -17,6 +17,11 @@ function s(w: number, r: number, type: LoggedSet['type'] = 'normal'): LoggedSet 
 /** cardio set: minutes, km */
 function c(min: number, km: number): LoggedSet {
   return { type: 'normal', weight: 0, reps: 0, duration: min, distance: km, done: true }
+}
+
+/** shared-set helper for feed snapshots */
+function ss(w: number, r: number): SharedSet {
+  return { type: 'normal', weight: w, reps: r, duration: 0, distance: 0 }
 }
 
 function rs(w: number, r: number, type: RoutineSet['type'] = 'normal'): RoutineSet {
@@ -175,58 +180,82 @@ export function sampleRoutines(): Routine[] {
 }
 
 export function samplePosts(): Post[] {
+  const now = Date.now()
   return [
     {
       id: 'post-maya',
-      athlete: 'Maya Reyes',
-      handle: 'mayalifts',
-      color: '#ec4899',
-      time: Date.now() - 2 * 3600000,
-      workoutName: 'Push Day',
-      muscles: ['Chest', 'Shoulders', 'Triceps'],
-      volume: 6420,
-      durationMin: 58,
-      exercises: ['Bench Press', 'Incline DB Press', 'Lateral Raise', 'Rope Pushdown'],
+      author: { name: 'Maya Reyes', handle: 'mayalifts', color: '#ec4899', kind: 'athlete' },
+      workout: {
+        name: 'Push Day',
+        start: now - 2 * 3600000,
+        durationMin: 58,
+        volumeKg: 6420,
+        exercises: [
+          { name: 'Bench Press', sets: [ss(60, 8), ss(60, 7), ss(62.5, 6)] },
+          { name: 'Incline DB Press', sets: [ss(22, 10), ss(22, 9), ss(22, 8)] },
+          { name: 'Lateral Raise', sets: [ss(10, 12), ss(10, 12)] },
+          { name: 'Rope Pushdown', sets: [ss(27.5, 12), ss(27.5, 10)] },
+        ],
+      },
+      createdAt: now - 2 * 3600000,
       likes: 24,
+      likedByMe: false,
+      comments: [{ name: 'Dev', text: 'Those bench numbers are flying up 🔥', at: now - 3600000 }],
     },
     {
       id: 'post-dev',
-      athlete: 'Dev Sharma',
-      handle: 'dev.squats',
-      color: '#3b82f6',
-      time: Date.now() - 7 * 3600000,
-      workoutName: 'Leg Day',
-      muscles: ['Quads', 'Glutes', 'Calves'],
-      volume: 9840,
-      durationMin: 72,
-      exercises: ['Back Squat', 'Romanian Deadlift', 'Leg Press', 'Calf Raise'],
+      author: { name: 'Dev Sharma', handle: 'dev.squats', color: '#3b82f6', kind: 'athlete' },
+      workout: {
+        name: 'Leg Day',
+        start: now - 7 * 3600000,
+        durationMin: 72,
+        volumeKg: 9840,
+        exercises: [
+          { name: 'Back Squat', sets: [ss(100, 5), ss(110, 5), ss(115, 3)] },
+          { name: 'Romanian Deadlift', sets: [ss(90, 8), ss(90, 8)] },
+          { name: 'Leg Press', sets: [ss(180, 12), ss(180, 10)] },
+          { name: 'Calf Raise', sets: [ss(80, 15), ss(80, 15)] },
+        ],
+      },
+      createdAt: now - 7 * 3600000,
       likes: 41,
+      likedByMe: false,
+      comments: [],
     },
     {
       id: 'post-sofia',
-      athlete: 'Sofia Kim',
-      handle: 'sofiaflex',
-      color: '#f59e0b',
-      time: Date.now() - 26 * 3600000,
-      workoutName: 'Pull Day',
-      muscles: ['Back', 'Biceps'],
-      volume: 5310,
-      durationMin: 52,
-      exercises: ['Lat Pulldown', 'Barbell Row', 'Face Pull', 'EZ Bar Curl'],
+      author: { name: 'Sofia Kim', handle: 'sofiaflex', color: '#f59e0b', kind: 'athlete' },
+      workout: {
+        name: 'Pull Day',
+        start: now - 26 * 3600000,
+        durationMin: 52,
+        volumeKg: 5310,
+        exercises: [
+          { name: 'Lat Pulldown', sets: [ss(52.5, 10), ss(52.5, 9)] },
+          { name: 'Barbell Row', sets: [ss(62.5, 8), ss(62.5, 8)] },
+          { name: 'Face Pull', sets: [ss(17.5, 15), ss(17.5, 15)] },
+          { name: 'EZ Bar Curl', sets: [ss(22.5, 10), ss(22.5, 9)] },
+        ],
+      },
+      createdAt: now - 26 * 3600000,
       likes: 17,
+      likedByMe: false,
+      comments: [],
     },
     {
       id: 'post-jonas',
-      athlete: 'Jonas Weber',
-      handle: 'jonasruns',
-      color: '#22c55e',
-      time: Date.now() - 38 * 3600000,
-      workoutName: 'Easy 5K',
-      muscles: ['Cardio'],
-      volume: 0,
-      durationMin: 31,
-      exercises: ['Outdoor Run'],
+      author: { name: 'Jonas Weber', handle: 'jonasruns', color: '#22c55e', kind: 'athlete' },
+      workout: {
+        name: 'Easy 5K',
+        start: now - 38 * 3600000,
+        durationMin: 31,
+        volumeKg: 0,
+        exercises: [{ name: 'Outdoor Run', sets: [{ type: 'normal', weight: 0, reps: 0, duration: 31, distance: 5.2 }] }],
+      },
+      createdAt: now - 38 * 3600000,
       likes: 9,
+      likedByMe: false,
+      comments: [],
     },
   ]
 }

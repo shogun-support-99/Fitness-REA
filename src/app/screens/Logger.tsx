@@ -5,7 +5,9 @@ import { Icon } from '../../components/icons'
 import { Confirm, Sheet } from '../../components/ui'
 import type { LoggedSet, PR, SetType, Workout } from '../../lib/types'
 import {
+  bestSetE1RM,
   computePRs,
+  e1RM,
   fmtElapsed,
   fmtNum,
   fmtVolume,
@@ -72,6 +74,7 @@ export default function Logger() {
   const [editing, setEditing] = useState<string | null>(null)
   const [notesOpen, setNotesOpen] = useState<string | null>(null)
   const [confirmExit, setConfirmExit] = useState(false)
+  const [plates, setPlates] = useState<{ target: number; bar: number } | null>(null)
   const [finishing, setFinishing] = useState(false)
   const [summary, setSummary] = useState<{
     volume: number
@@ -141,6 +144,19 @@ export default function Logger() {
     patchSet(ei, si, { done: nowDone })
     if (nowDone && state.settings.restAutoStart) {
       ui.startRest(state.settings.defaultRest)
+    }
+    // live PR: celebrate the moment the set is logged, not at the end
+    if (nowDone && s.weight > 0 && s.reps > 0 && s.type !== 'warmup') {
+      const exerciseId = active.exercises[ei].exerciseId
+      const priorBest = state.workouts.reduce((best, w) => {
+        const e = w.exercises.find((x) => x.exerciseId === exerciseId)
+        return e ? Math.max(best, bestSetE1RM(e.sets)) : best
+      }, 0)
+      const thisE1rm = e1RM(s.weight, s.reps)
+      if (thisE1rm > priorBest && priorBest > 0) {
+        const name = getExercise(exerciseId)?.name ?? 'this lift'
+        ui.toast(`New PR — ${name} ${fmtWeight(s.weight, unit)}×${s.reps}`)
+      }
     }
   }
 
@@ -248,10 +264,28 @@ export default function Logger() {
           <Icon name="clock" size={14} />
           {fmtElapsed(Date.now() - workout.start)}
         </span>
+        <button
+          className="icon-btn"
+          aria-label="Plate calculator"
+          onClick={() => {
+            const lastW = workout.exercises
+              .flatMap((e) => e.sets)
+              .filter((x) => x.weight > 0)
+              .map((x) => toDisplayVal(x.weight, unit))
+              .pop()
+            setPlates({ target: lastW ?? (unit === 'kg' ? 60 : 135), bar: unit === 'kg' ? 20 : 45 })
+          }}
+        >
+          <Icon name="sliders" size={18} />
+        </button>
         <button className="btn btn-primary btn-sm" onClick={() => setFinishing(true)}>
           Finish
         </button>
       </header>
+
+      {plates && (
+        <PlateCalculator unit={unit} initial={plates} onClose={() => setPlates(null)} />
+      )}
 
       <div className="logger-body">
         {workout.exercises.map((ex, ei) => {
@@ -462,3 +496,83 @@ function summarizeSet(s: LoggedSet, unit: 'kg' | 'lb'): string {
   return `${s.reps}`
 }
 
+
+
+const KG_PLATES = [25, 20, 15, 10, 5, 2.5, 1.25]
+const LB_PLATES = [45, 35, 25, 10, 5, 2.5]
+
+function PlateCalculator({
+  unit,
+  initial,
+  onClose,
+}: {
+  unit: 'kg' | 'lb'
+  initial: { target: number; bar: number }
+  onClose: () => void
+}) {
+  const [target, setTarget] = useState(String(initial.target))
+  const [bar, setBar] = useState(String(initial.bar))
+  const plates = unit === 'kg' ? KG_PLATES : LB_PLATES
+
+  const t = parseFloat(target) || 0
+  const b = parseFloat(bar) || 0
+  const perSide = (t - b) / 2
+  const load: number[] = []
+  let rest = perSide
+  if (rest > 0) {
+    for (const p of plates) {
+      while (rest >= p - 0.001 && load.length < 24) {
+        load.push(p)
+        rest = Math.round((rest - p) * 100) / 100
+      }
+    }
+  }
+  const loaded = b + load.reduce((a, c) => a + c, 0) * 2
+  const short = Math.round((t - loaded) * 100) / 100
+
+  return (
+    <Sheet title="Plate calculator" onClose={onClose}>
+      <div className="plate-form">
+        <label className="field">
+          <span>Target weight ({unit})</span>
+          <input
+            inputMode="decimal"
+            value={target}
+            onChange={(e) => setTarget(e.target.value)}
+          />
+        </label>
+        <label className="field">
+          <span>Bar ({unit})</span>
+          <input inputMode="decimal" value={bar} onChange={(e) => setBar(e.target.value)} />
+        </label>
+      </div>
+
+      {perSide > 0 ? (
+        <>
+          <div className="plate-bar" aria-label={`Bar loaded to ${loaded} ${unit}`}>
+            <i className="plate-plate plate-bar-left" />
+            {load.map((p, i) => (
+              <i
+                key={i}
+                className={`plate-plate ${p >= (unit === 'kg' ? 20 : 45) ? 'plate-big' : p >= (unit === 'kg' ? 10 : 25) ? 'plate-mid' : 'plate-small'}`}
+              >
+                {p}
+              </i>
+            ))}
+            <i className="plate-plate plate-bar-right" />
+          </div>
+          <p className="plate-result">
+            <strong>{load.length} plates per side</strong>
+            <span>
+              {b} {unit} bar + {load.reduce((a, c) => a + c, 0)} {unit} per side ={' '}
+              {Math.round(loaded * 100) / 100} {unit}
+              {short > 0.01 ? ` (short by ${short} ${unit})` : ''}
+            </span>
+          </p>
+        </>
+      ) : (
+        <p className="muted">Target is lighter than the bar — no plates needed.</p>
+      )}
+    </Sheet>
+  )
+}
