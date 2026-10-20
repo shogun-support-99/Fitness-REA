@@ -20,6 +20,9 @@ export interface UIApi {
   startRest: (sec: number) => void
   adjustRest: (sec: number) => void
   stopRest: () => void
+  /** full exercise library chunk: loading right now, ready, or failed to fetch */
+  datasetStatus: 'loading' | 'ready' | 'error'
+  retryDataset: () => void
 }
 
 export const UICtx = createContext<UIApi | null>(null)

@@ -19,6 +19,7 @@ export default function Home() {
   const { state, dispatch } = useStore()
   const ui = useUI()
   const { workouts, routines, settings, active } = state
+  const { allExercises } = useStore()
   const unit = settings.unit
 
   const ws = weekStart(Date.now())
@@ -184,6 +185,24 @@ export default function Home() {
             ))}
           </div>
         )}
+      </section>
+
+      <section className="section">
+        <button className="card row-item" onClick={() => ui.resetTo('exercises')}>
+          <div className="row-icon">
+            <Icon name="book" size={20} />
+          </div>
+          <div className="row-main">
+            <strong>Exercise library</strong>
+            <span>
+              {allExercises.length.toLocaleString()} exercises
+              {ui.datasetStatus === 'loading' && allExercises.length < 200
+                ? ' — loading…'
+                : ''}
+            </span>
+          </div>
+          <Icon name="chevronRight" size={16} className="row-chevron" />
+        </button>
       </section>
     </div>
   )
