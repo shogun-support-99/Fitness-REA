@@ -128,28 +128,6 @@ export default function AppShell() {
   const [toast, setToast] = useState<{ msg: string; id: number } | null>(null)
   const toastTimer = useRef<number | null>(null)
 
-  // Load the full 1,300+ exercise dataset chunk after first paint.
-  // A failure is never silent: the status surfaces in the Exercises tab and
-  // picker, with a retry.
-  const [datasetStatus, setDatasetStatus] = useState<'loading' | 'ready' | 'error'>('loading')
-  const loadDataset = useCallback(() => {
-    setDatasetStatus('loading')
-    import('../data/exercises-dataset')
-      .then((m) => {
-        dispatch({ t: 'datasetLoaded', exercises: m.DATASET_EXERCISES })
-        setDatasetStatus('ready')
-      })
-      .catch(() => {
-        console.warn('exercise dataset chunk failed to load')
-        setDatasetStatus('error')
-      })
-  }, [])
-  useEffect(() => {
-    if (state.dataset.length > 0) setDatasetStatus('ready')
-    else loadDataset()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   const showToast = useCallback((msg: string) => {
     setToast({ msg, id: Date.now() })
     if (toastTimer.current) window.clearTimeout(toastTimer.current)
@@ -172,8 +150,6 @@ export default function AppShell() {
           : r
       ),
     stopRest: () => setRest(null),
-    datasetStatus,
-    retryDataset: loadDataset,
   }
 
   // rest countdown completion

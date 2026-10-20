@@ -194,12 +194,7 @@ export default function Home() {
           </div>
           <div className="row-main">
             <strong>Exercise library</strong>
-            <span>
-              {allExercises.length.toLocaleString()} exercises
-              {ui.datasetStatus === 'loading' && allExercises.length < 200
-                ? ' — loading…'
-                : ''}
-            </span>
+            <span>{allExercises.length.toLocaleString()} exercises</span>
           </div>
           <Icon name="chevronRight" size={16} className="row-chevron" />
         </button>

@@ -122,15 +122,14 @@ check('toggleLike toggles', s.liked.length === 0)
 s = reducer(s, { t: 'toggleLike', id: 'p1' })
 check('toggleLike adds', s.liked.includes('p1'))
 
-/* regression: the dataset dispatch used to fall through the reducer untouched,
-   leaving the app with only the 109 curated exercises */
+/* regression: the library used to load through a dispatch the reducer ignored,
+   leaving the app with only the 109 curated exercises. It now ships in the
+   initial state itself — there is no async path left to fail. */
 let ds = freshState()
-check('fresh state has no dataset', ds.dataset.length === 0)
-ds = reducer(ds, { t: 'datasetLoaded', exercises: DATASET_EXERCISES })
-check('reducer applies datasetLoaded', ds.dataset.length === DATASET_EXERCISES.length)
+check('fresh state carries the full library', ds.dataset.length === DATASET_EXERCISES.length)
 check('merged library is 1300+ exercises', ds.dataset.length + EXERCISES.length >= 1300)
-ds = reducer(ds, { t: 'datasetLoaded', exercises: DATASET_EXERCISES })
-check('datasetLoaded is idempotent', ds.dataset.length === DATASET_EXERCISES.length)
+ds = reducer(ds, { t: 'clearAll' })
+check('clearAll keeps the library', ds.dataset.length === DATASET_EXERCISES.length)
 
 const cleared = reducer(s, { t: 'clearAll' })
 check('clearAll resets', cleared.workouts.length === 0 && cleared.active === null && cleared.customs.length === 0)

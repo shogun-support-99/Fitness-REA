@@ -99,16 +99,6 @@ export default function ExercisesTab() {
           : `${list.length.toLocaleString()} of ${allExercises.length.toLocaleString()} exercises`}
       </p>
 
-      {ui.datasetStatus === 'error' && (
-        <div className="dataset-banner" role="alert">
-          <Icon name="info" size={18} />
-          <span>The full library (1,200+ extra exercises) didn’t load.</span>
-          <button className="link-btn" onClick={ui.retryDataset}>
-            Try again
-          </button>
-        </div>
-      )}
-
       <div className="list">
         {shown.map((ex) => (
           <button
@@ -132,13 +122,6 @@ export default function ExercisesTab() {
           </button>
         ))}
       </div>
-
-      {ui.datasetStatus === 'loading' && allExercises.length < 200 && (
-        <div className="dataset-banner">
-          <Icon name="dumbbell" size={18} className="spin" />
-          <span>Loading the exercise library…</span>
-        </div>
-      )}
 
       {limit < list.length && (
         <div ref={sentinelRef} className="picker-cap">

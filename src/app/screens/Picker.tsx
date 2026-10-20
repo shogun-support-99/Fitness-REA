@@ -57,16 +57,6 @@ export default function Picker({ onPick }: { onPick: (ids: string[]) => void }) 
         </button>
       </header>
 
-      {ui.datasetStatus === 'error' && (
-        <div className="dataset-banner" role="alert">
-          <Icon name="info" size={18} />
-          <span>The full library (1,200+ extra exercises) didn’t load.</span>
-          <button className="link-btn" onClick={ui.retryDataset}>
-            Try again
-          </button>
-        </div>
-      )}
-
       <div className="picker-tools">
         <div className="search-box">
           <Icon name="search" size={16} />
