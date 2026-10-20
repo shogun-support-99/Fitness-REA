@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react'
 import { useStore } from '../../lib/store'
 import { useUI } from '../uiContext'
 import { Icon } from '../../components/icons'
-import { EQUIPMENTS, MUSCLE_GROUPS, imgUrl, searchExercises } from '../../data/exercises'
+import { EQUIPMENTS, MUSCLE_GROUPS, searchExercises } from '../../data/exercises'
+import { ExerciseThumb } from '../../components/media'
 import type { Equipment, MuscleGroup } from '../../lib/types'
 
 const RENDER_CAP = 60
@@ -85,11 +86,7 @@ export default function ExercisesTab() {
             onClick={() => ui.push({ k: 'exercise', id: ex.id })}
           >
             <div className="row-thumb">
-              {ex.media ? (
-                <img loading="lazy" src={imgUrl(ex.media)} alt="" />
-              ) : (
-                <Icon name="dumbbell" size={20} />
-              )}
+              <ExerciseThumb media={ex.media} size={20} />
             </div>
             <div className="row-main">
               <strong>

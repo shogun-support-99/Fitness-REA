@@ -1,72 +1,27 @@
 import { useEffect, useState } from 'react'
-import { Icon, Logo, Stars } from '../components/icons'
+import { Icon, Logo, type IconName } from '../components/icons'
 
 const WORDS = ['Track workouts.', 'Get stronger.', 'Stay consistent.']
 
-const TESTIMONIALS = [
-  {
-    name: 'Arjun M.',
-    handle: '@arjun.lifts',
-    color: '#2f6bff',
-    quote:
-      'I tried every tracker out there. This is the first one I actually open at the gym. Logging a set takes two seconds.',
-  },
-  {
-    name: 'Priya S.',
-    handle: '@priyasquats',
-    color: '#ec4899',
-    quote:
-      'The rest timer alone is worth it. My workouts are tighter and the PR notifications keep me chasing numbers.',
-  },
-  {
-    name: 'Marcus T.',
-    handle: '@mtfitness',
-    color: '#f59e0b',
-    quote:
-      'Routines are a game changer. I set up my 4-day split once and now every session is one tap away.',
-  },
-  {
-    name: 'Elena K.',
-    handle: '@elenakfit',
-    color: '#22c55e',
-    quote:
-      'The progress charts showed me my bench had stalled for two months. Deloaded, rebuilt, and just hit a new PR.',
-  },
-  {
-    name: 'David O.',
-    handle: '@dolifts',
-    color: '#a855f7',
-    quote:
-      'Clean, fast, no ads, no upsells. It just does exactly what I need and gets out of the way.',
-  },
-  {
-    name: 'Sana R.',
-    handle: '@sana.runs',
-    color: '#06b6d4',
-    quote:
-      'I log my strength work and my runs in the same place. The weekly volume chart is dangerously motivating.',
-  },
-]
-
-const GUIDES = [
+const GUIDES: { tag: string; title: string; icon: IconName; c1: string; c2: string }[] = [
   {
     tag: 'Training',
     title: 'The 3-day workout split: the complete guide',
-    emoji: '🏋️',
+    icon: 'dumbbell',
     c1: '#2f6bff',
     c2: '#7c3aed',
   },
   {
     tag: 'Progress',
     title: 'Progressive overload, explained simply',
-    emoji: '📈',
+    icon: 'chart',
     c1: '#ec4899',
     c2: '#f59e0b',
   },
   {
     tag: 'Recovery',
     title: 'How to warm up for heavy lifts (and why it matters)',
-    emoji: '🧘',
+    icon: 'timer',
     c1: '#06b6d4',
     c2: '#22c55e',
   },
@@ -97,7 +52,7 @@ function PhoneMock() {
       <div className="phone-screen">
         <div className="pm-status">
           <span>9:41</span>
-          <span className="pm-status-icons">▮▮▮ ⚡</span>
+          <span className="pm-status-icons"><span className="pm-sig" /><span className="pm-batt" /></span>
         </div>
         <div className="pm-head">
           <div>
@@ -124,7 +79,7 @@ function PhoneMock() {
             <span>volume</span>
           </div>
           <div>
-            <strong>🔥 6</strong>
+            <strong className="pm-flame"><Icon name="flame" size={11} fill="currentColor" /> 6</strong>
             <span>streak</span>
           </div>
         </div>
@@ -274,7 +229,6 @@ function FeedMock() {
 
 function Feature({
   id,
-  kicker,
   title,
   copy,
   bullets,
@@ -282,7 +236,6 @@ function Feature({
   flip,
 }: {
   id?: string
-  kicker: string
   title: string
   copy: string
   bullets: string[]
@@ -293,7 +246,6 @@ function Feature({
     <section className="feature" id={id}>
       <div className={`feature-grid ${flip ? 'feature-flip' : ''}`}>
         <div className="feature-copy">
-          <p className="kicker">{kicker}</p>
           <h2>{title}</h2>
           <p className="lead">{copy}</p>
           <ul className="feature-list">
@@ -332,17 +284,13 @@ export default function Landing() {
 
       <header className="hero">
         <div className="hero-copy">
-          <div className="hero-pill">
-            <Icon name="zap" size={13} /> Free forever · no account needed
-          </div>
           <h1>
             <Rotator />
-            <br />
-            <span className="hero-rest">Become the athlete you keep planning to be.</span>
           </h1>
+          <p className="hero-lead">Become the athlete you keep planning to be.</p>
           <p className="hero-sub">
-            REA Fit is a free workout tracker for the web. Plan routines, log every set, chase new
-            PRs — and actually enjoy the process.
+            REA Fit is a free workout tracker for the web — no account needed. Plan routines, log
+            every set, chase new PRs.
           </p>
           <div className="hero-actions">
             <a className="btn-cta btn-cta-lg" href="#/app">
@@ -353,38 +301,14 @@ export default function Landing() {
               Explore features
             </a>
           </div>
-          <div className="hero-proof">
-            <div className="hero-avatars">
-              {['#2f6bff', '#ec4899', '#f59e0b', '#22c55e', '#a855f7'].map((c, i) => (
-                <span key={i} style={{ background: c }} />
-              ))}
-            </div>
-            <div>
-              <Stars />
-              <strong>4.9</strong>
-              <span className="muted">· loved by lifters everywhere</span>
-            </div>
-          </div>
         </div>
         <div className="hero-visual">
           <PhoneMock />
         </div>
       </header>
 
-      <section className="press">
-        <p>Featured on</p>
-        <div className="press-row">
-          <span className="press-serif">Iron Weekly</span>
-          <span className="press-black">THE LIFT JOURNAL</span>
-          <span className="press-mono">gymtech.today</span>
-          <span className="press-serif">Pulse Magazine</span>
-          <span className="press-black">STRENGTH DIGEST</span>
-        </div>
-      </section>
-
       <Feature
         id="features"
-        kicker="Log workouts"
         title="A tracker that just works"
         copy="Everything you need to log your workouts and smash your goals — nothing you don't."
         bullets={[
@@ -397,8 +321,7 @@ export default function Landing() {
       />
 
       <Feature
-        kicker="Measure progress"
-        title="Staying motivated is easier when you can see how far you've come"
+        title="See how far you've come"
         copy="Every set you log feeds your charts, records and history — so progress is impossible to miss."
         bullets={[
           'Weekly volume charts',
@@ -412,7 +335,6 @@ export default function Landing() {
 
       <Feature
         id="community"
-        kicker="Join the community"
         title="Follow friends. Trade routines. Stay accountable."
         copy="Training is better with an audience. Share workouts, cheer each other on, and borrow the routines that work."
         bullets={[
@@ -427,7 +349,6 @@ export default function Landing() {
       <section className="devices">
         <div className="devices-grid">
           <div className="feature-copy">
-            <p className="kicker">Every device</p>
             <h2>Your gym bag, on every screen</h2>
             <p className="lead">
               Phone, tablet or laptop — REA Fit runs in the browser with nothing to install.
@@ -480,27 +401,6 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="testimonials" id="testimonials">
-        <h2>Loved by athletes everywhere</h2>
-        <div className="t-grid">
-          {TESTIMONIALS.map((t) => (
-            <figure key={t.handle} className="t-card">
-              <Stars />
-              <blockquote>{t.quote}</blockquote>
-              <figcaption>
-                <span className="t-avatar" style={{ background: t.color }}>
-                  {t.name[0]}
-                </span>
-                <div>
-                  <strong>{t.name}</strong>
-                  <span>{t.handle}</span>
-                </div>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-      </section>
-
       <section className="guides" id="guides">
         <h2>Our guides</h2>
         <p className="lead">Short, practical reads to make your next training block your best.</p>
@@ -508,7 +408,7 @@ export default function Landing() {
           {GUIDES.map((g) => (
             <a key={g.title} className="g-card" href="#/app">
               <div className="g-cover" style={{ background: `linear-gradient(135deg, ${g.c1}, ${g.c2})` }}>
-                <span>{g.emoji}</span>
+                <Icon name={g.icon} size={40} strokeWidth={1.8} />
                 <em>{g.tag}</em>
               </div>
               <h3>{g.title}</h3>
@@ -562,7 +462,6 @@ export default function Landing() {
           </div>
           <div>
             <h4>Company</h4>
-            <a href="#testimonials">Reviews</a>
             <a href="https://github.com/shogun-support-99/Fitness-REA">About</a>
             <a href="#/">Home</a>
           </div>
