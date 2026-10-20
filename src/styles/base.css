@@ -136,37 +136,6 @@ h4 {
   letter-spacing: 0.005em;
 }
 
-/* library status banner (exercises tab + picker) */
-.dataset-banner {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 11px 13px;
-  border-radius: 12px;
-  background: var(--accent-soft);
-  color: var(--text);
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 12px;
-}
-.dataset-banner .link-btn {
-  margin-left: auto;
-  flex-shrink: 0;
-}
-.dataset-banner svg {
-  color: var(--accent-text);
-  flex-shrink: 0;
-}
-
-.spin {
-  animation: spin 1.1s linear infinite;
-}
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 /* count chip next to page titles */
 .head-count {
   display: inline-block;

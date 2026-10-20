@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useReducer } from 'react'
 import type { AppState, Exercise, Routine, Settings, Workout } from './types'
 import { EXERCISES } from '../data/exercises'
+import { DATASET_EXERCISES } from '../data/exercises-dataset'
 import { uid } from './utils'
 import { samplePosts, sampleRoutines, sampleWorkouts } from './seed'
 
@@ -21,7 +22,7 @@ export function freshState(): AppState {
     workouts: [],
     routines: [],
     customs: [],
-    dataset: [],
+    dataset: DATASET_EXERCISES,
     settings: { ...DEFAULT_SETTINGS },
     liked: [],
     comments: {},
@@ -38,6 +39,7 @@ function loadState(): AppState {
     return {
       ...freshState(),
       ...parsed,
+      dataset: DATASET_EXERCISES,
       settings: { ...DEFAULT_SETTINGS, ...(parsed.settings ?? {}) },
     }
   } catch {
@@ -63,7 +65,6 @@ export type Action =
   | { t: 'toggleLike'; id: string }
   | { t: 'addComment'; id: string; text: string }
   | { t: 'toggleFollow'; handle: string }
-  | { t: 'datasetLoaded'; exercises: Exercise[] }
 
 export function reducer(state: AppState, action: Action): AppState {
   switch (action.t) {
@@ -186,9 +187,6 @@ export function reducer(state: AppState, action: Action): AppState {
           ? state.followed.filter((h) => h !== action.handle)
           : [...state.followed, action.handle],
       }
-    case 'datasetLoaded':
-      if (state.dataset.length > 0) return state
-      return { ...state, dataset: action.exercises }
     default:
       return state
   }
