@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useStore } from '../../lib/store'
 import { useUI } from '../uiContext'
 import { Icon } from '../../components/icons'
@@ -6,7 +6,7 @@ import { MUSCLE_GROUPS, searchExercises } from '../../data/exercises'
 import { ExerciseThumb } from '../../components/media'
 import type { MuscleGroup } from '../../lib/types'
 
-const RENDER_CAP = 60
+const PAGE = 60
 
 export default function Picker({ onPick }: { onPick: (ids: string[]) => void }) {
   const { allExercises } = useStore()
@@ -14,9 +14,26 @@ export default function Picker({ onPick }: { onPick: (ids: string[]) => void }) 
   const [q, setQ] = useState('')
   const [muscle, setMuscle] = useState<MuscleGroup | 'all'>('all')
   const [selected, setSelected] = useState<string[]>([])
+  const [limit, setLimit] = useState(PAGE)
 
   const list = useMemo(() => searchExercises(allExercises, q, muscle), [allExercises, q, muscle])
-  const shown = list.slice(0, RENDER_CAP)
+  const shown = list.slice(0, limit)
+
+  useEffect(() => setLimit(PAGE), [q, muscle])
+
+  const sentinelRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!el || limit >= list.length) return
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) setLimit((l) => Math.min(l + PAGE, list.length))
+      },
+      { rootMargin: '600px 0px' }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [limit, list.length])
 
   const toggle = (id: string) =>
     setSelected((sel) => (sel.includes(id) ? sel.filter((i) => i !== id) : [...sel, id]))
@@ -39,6 +56,16 @@ export default function Picker({ onPick }: { onPick: (ids: string[]) => void }) 
           Add{selected.length > 0 ? ` (${selected.length})` : ''}
         </button>
       </header>
+
+      {ui.datasetStatus === 'error' && (
+        <div className="dataset-banner" role="alert">
+          <Icon name="info" size={18} />
+          <span>The full library (1,200+ extra exercises) didn’t load.</span>
+          <button className="link-btn" onClick={ui.retryDataset}>
+            Try again
+          </button>
+        </div>
+      )}
 
       <div className="picker-tools">
         <div className="search-box">
@@ -90,10 +117,10 @@ export default function Picker({ onPick }: { onPick: (ids: string[]) => void }) 
             </button>
           )
         })}
-        {list.length > RENDER_CAP && (
-          <p className="picker-cap">
-            Showing {RENDER_CAP} of {list.length} — keep typing to narrow it down.
-          </p>
+        {limit < list.length && (
+          <div ref={sentinelRef} className="picker-cap">
+            {shown.length} of {list.length} — keep scrolling
+          </div>
         )}
         {list.length === 0 && <p className="picker-empty">No exercises match “{q}”.</p>}
       </div>

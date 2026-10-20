@@ -1,12 +1,12 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useStore } from '../../lib/store'
 import { useUI } from '../uiContext'
+import { ExerciseThumb } from '../../components/media'
 import { Icon } from '../../components/icons'
 import { EQUIPMENTS, MUSCLE_GROUPS, searchExercises } from '../../data/exercises'
-import { ExerciseThumb } from '../../components/media'
 import type { Equipment, MuscleGroup } from '../../lib/types'
 
-const RENDER_CAP = 60
+const PAGE = 60
 
 export default function ExercisesTab() {
   const { allExercises } = useStore()
@@ -14,17 +14,38 @@ export default function ExercisesTab() {
   const [q, setQ] = useState('')
   const [muscle, setMuscle] = useState<MuscleGroup | 'all'>('all')
   const [equipment, setEquipment] = useState<Equipment | 'all'>('all')
+  const [limit, setLimit] = useState(PAGE)
 
   const list = useMemo(
     () => searchExercises(allExercises, q, muscle, equipment),
     [allExercises, q, muscle, equipment]
   )
-  const shown = list.slice(0, RENDER_CAP)
+  const shown = list.slice(0, limit)
+
+  // reset paging whenever the query changes
+  useEffect(() => setLimit(PAGE), [q, muscle, equipment])
+
+  // progressive loading: fetch the next page as the sentinel nears view
+  const sentinelRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!el || limit >= list.length) return
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) setLimit((l) => Math.min(l + PAGE, list.length))
+      },
+      { rootMargin: '600px 0px' }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [limit, list.length])
 
   return (
     <div className="tab-screen">
       <header className="page-head">
-        <h1>Exercises</h1>
+        <h1>
+          Exercises <span className="head-count">{allExercises.length.toLocaleString()}</span>
+        </h1>
         <button className="btn btn-primary btn-sm" onClick={() => ui.push({ k: 'customExercise' })}>
           <Icon name="plus" size={16} /> Custom
         </button>
@@ -34,7 +55,7 @@ export default function ExercisesTab() {
         <div className="search-box">
           <Icon name="search" size={16} />
           <input
-            placeholder={`Search ${allExercises.length} exercises…`}
+            placeholder={`Search ${allExercises.length.toLocaleString()} exercises…`}
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
@@ -74,9 +95,19 @@ export default function ExercisesTab() {
 
       <p className="muted small">
         {list.length === allExercises.length
-          ? `${list.length} exercises`
-          : `${list.length} of ${allExercises.length} exercises`}
+          ? `${list.length.toLocaleString()} exercises`
+          : `${list.length.toLocaleString()} of ${allExercises.length.toLocaleString()} exercises`}
       </p>
+
+      {ui.datasetStatus === 'error' && (
+        <div className="dataset-banner" role="alert">
+          <Icon name="info" size={18} />
+          <span>The full library (1,200+ extra exercises) didn’t load.</span>
+          <button className="link-btn" onClick={ui.retryDataset}>
+            Try again
+          </button>
+        </div>
+      )}
 
       <div className="list">
         {shown.map((ex) => (
@@ -102,8 +133,20 @@ export default function ExercisesTab() {
         ))}
       </div>
 
-      {list.length > RENDER_CAP && (
-        <p className="picker-cap">Showing {RENDER_CAP} of {list.length} — search or filter to narrow it down.</p>
+      {ui.datasetStatus === 'loading' && allExercises.length < 200 && (
+        <div className="dataset-banner">
+          <Icon name="dumbbell" size={18} className="spin" />
+          <span>Loading the exercise library…</span>
+        </div>
+      )}
+
+      {limit < list.length && (
+        <div ref={sentinelRef} className="picker-cap">
+          {shown.length.toLocaleString()} of {list.length.toLocaleString()} — keep scrolling
+        </div>
+      )}
+      {limit >= list.length && list.length > PAGE && (
+        <p className="picker-cap">End of the list — {list.length.toLocaleString()} exercises.</p>
       )}
     </div>
   )

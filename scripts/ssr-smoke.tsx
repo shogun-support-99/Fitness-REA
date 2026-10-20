@@ -145,6 +145,8 @@ const fakeUI: UIApi = {
   startRest() {},
   adjustRest() {},
   stopRest() {},
+  datasetStatus: 'ready',
+  retryDataset() {},
 }
 
 function wrap(el: React.ReactElement) {

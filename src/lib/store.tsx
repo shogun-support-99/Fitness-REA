@@ -186,6 +186,9 @@ export function reducer(state: AppState, action: Action): AppState {
           ? state.followed.filter((h) => h !== action.handle)
           : [...state.followed, action.handle],
       }
+    case 'datasetLoaded':
+      if (state.dataset.length > 0) return state
+      return { ...state, dataset: action.exercises }
     default:
       return state
   }
