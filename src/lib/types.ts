@@ -99,18 +99,74 @@ export interface Settings {
   sound: boolean
 }
 
-export interface Post {
-  id: string
-  athlete: string
+/** Who wrote a feed post: you, one of your contacts, or a seeded athlete. */
+export interface PostAuthor {
+  name: string
   handle: string
   color: string
-  time: number
-  workoutName: string
-  muscles: string[]
-  volume: number
+  kind: 'me' | 'contact' | 'athlete'
+}
+
+/** A workout snapshot embedded in a post — survives independently of logs. */
+export interface SharedSet {
+  type: SetType
+  weight: number
+  reps: number
+  duration: number
+  distance: number
+}
+
+export interface SharedExercise {
+  name: string
+  sets: SharedSet[]
+}
+
+export interface SharedWorkout {
+  name: string
+  start: number
   durationMin: number
-  exercises: string[]
+  volumeKg: number
+  exercises: SharedExercise[]
+}
+
+export interface PostComment {
+  name: string
+  text: string
+  at: number
+}
+
+export interface Post {
+  id: string
+  author: PostAuthor
+  workout: SharedWorkout
+  /** set when the post was shared from one of this account's own workouts */
+  workoutId?: string
+  createdAt: number
   likes: number
+  likedByMe: boolean
+  comments: PostComment[]
+}
+
+export interface Contact {
+  id: string
+  name: string
+  handle: string
+  color: string
+  followed: boolean
+  addedAt: number
+}
+
+/** Local-first account. Passwords never leave this device. */
+export interface Account {
+  id: string
+  name: string
+  handle: string
+  email: string
+  kind: 'local' | 'guest'
+  color: string
+  salt: string
+  hash: string
+  createdAt: number
 }
 
 export interface AppState {
@@ -118,12 +174,13 @@ export interface AppState {
   workouts: Workout[]
   routines: Routine[]
   customs: Exercise[]
-  /** extra exercises loaded lazily from the bundled dataset chunk */
+  /** the full bundled exercise library */
   dataset: Exercise[]
   settings: Settings
-  liked: string[]
-  comments: Record<string, string[]>
-  followed: string[]
+  posts: Post[]
+  contacts: Contact[]
+  /** handles of seeded athletes the user follows */
+  followedHandles: string[]
   sampleLoaded: boolean
 }
 

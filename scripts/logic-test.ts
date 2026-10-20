@@ -116,11 +116,42 @@ const customId = 'custom-xyz'
 s = reducer(s, { t: 'addCustomExercise', exercise: { id: customId, name: 'My Move', equipment: 'Barbell', primary: 'Chest', secondary: [], category: 'strength', custom: true } })
 check('custom exercise added', s.customs.length === 1 && s.customs[0].id === customId)
 
-s = reducer(s, { t: 'toggleLike', id: 'p1' })
-s = reducer(s, { t: 'toggleLike', id: 'p1' })
-check('toggleLike toggles', s.liked.length === 0)
-s = reducer(s, { t: 'toggleLike', id: 'p1' })
-check('toggleLike adds', s.liked.includes('p1'))
+/* social layer: likes, comments, contacts, share codes */
+const post0 = s.posts[0]
+s = reducer(s, { t: 'likePost', id: post0.id })
+check('likePost adds like', s.posts[0].likedByMe === true && s.posts[0].likes === post0.likes + 1)
+s = reducer(s, { t: 'likePost', id: post0.id })
+check('likePost toggles off', s.posts[0].likedByMe === false && s.posts[0].likes === post0.likes)
+s = reducer(s, { t: 'commentPost', id: post0.id, text: 'strong session' })
+check('commentPost appends', s.posts[0].comments.length === post0.comments.length + 1)
+
+s = reducer(s, { t: 'addContact', name: 'Test Friend', handle: 'test.friend' })
+check('addContact adds', s.contacts.some((c) => c.handle === 'test.friend'))
+const contactId = s.contacts.find((c) => c.handle === 'test.friend')!.id
+check('new contact auto-follows', s.contacts.find((c) => c.id === contactId)!.followed === true)
+s = reducer(s, { t: 'toggleContactFollow', id: contactId })
+check('contact follow toggles', s.contacts.find((c) => c.id === contactId)!.followed === false)
+
+const shareW = s.workouts[0]
+s = reducer(s, { t: 'shareWorkout', workoutId: shareW.id })
+check('shareWorkout posts once', s.posts.filter((p) => p.workoutId === shareW.id).length === 1)
+s = reducer(s, { t: 'shareWorkout', workoutId: shareW.id })
+check('shareWorkout dedupes', s.posts.filter((p) => p.workoutId === shareW.id).length === 1)
+const sharedPost = s.posts.find((p) => p.workoutId === shareW.id)!
+check('shared post is mine', sharedPost.author.kind === 'me' && sharedPost.author.handle === 'you')
+check('shared post snapshots sets', sharedPost.workout.exercises.length === shareW.exercises.length)
+
+/* share codes round-trip */
+import { encodeShared, decodeShared, codeToPost } from '../src/lib/share'
+const code = encodeShared(sharedPost.author, sharedPost.workout, sharedPost.createdAt)
+const decoded = decodeShared(code)
+check('share code round-trips', decoded !== null && decoded.workout.name === sharedPost.workout.name)
+const importCount0 = s.posts.length
+s = reducer(s, { t: 'importSharedPost', code })
+check('import adds post', s.posts.length === importCount0 + 1)
+check('import creates followed contact', s.contacts.some((c) => c.handle === sharedPost.author.handle && c.followed === true))
+const bad = codeToPost('garbage!!')
+check('bad share code rejected', bad === null)
 
 /* regression: the library used to load through a dispatch the reducer ignored,
    leaving the app with only the 109 curated exercises. It now ships in the

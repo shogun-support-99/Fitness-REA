@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useEffect, useMemo, useReducer } from 'react'
-import type { AppState, Exercise, Routine, Settings, Workout } from './types'
+import type { AppState, Contact, Exercise, Post, Routine, Settings, Workout } from './types'
 import { EXERCISES } from '../data/exercises'
 import { DATASET_EXERCISES } from '../data/exercises-dataset'
+import { dataKey } from './auth'
+import { codeToPost } from './share'
 import { uid } from './utils'
 import { samplePosts, sampleRoutines, sampleWorkouts } from './seed'
-
-const KEY = 'reafit-state-v1'
 
 const DEFAULT_SETTINGS: Settings = {
   name: 'Athlete',
@@ -16,30 +16,33 @@ const DEFAULT_SETTINGS: Settings = {
   sound: true,
 }
 
-export function freshState(): AppState {
+export function freshState(name = 'Athlete'): AppState {
   return {
     active: null,
     workouts: [],
     routines: [],
     customs: [],
     dataset: DATASET_EXERCISES,
-    settings: { ...DEFAULT_SETTINGS },
-    liked: [],
-    comments: {},
-    followed: [],
+    settings: { ...DEFAULT_SETTINGS, name },
+    posts: samplePosts(),
+    contacts: [],
+    followedHandles: ['mayalifts'],
     sampleLoaded: false,
   }
 }
 
-function loadState(): AppState {
+function loadState(accountId: string): AppState {
   try {
-    const raw = localStorage.getItem(KEY)
+    const raw = localStorage.getItem(dataKey(accountId))
     if (!raw) return freshState()
     const parsed = JSON.parse(raw) as Partial<AppState>
     return {
-      ...freshState(),
+      ...freshState(parsed.settings?.name),
       ...parsed,
       dataset: DATASET_EXERCISES,
+      posts: Array.isArray(parsed.posts) && parsed.posts.length > 0 ? parsed.posts : samplePosts(),
+      contacts: parsed.contacts ?? [],
+      followedHandles: parsed.followedHandles ?? ['mayalifts'],
       settings: { ...DEFAULT_SETTINGS, ...(parsed.settings ?? {}) },
     }
   } catch {
@@ -62,9 +65,15 @@ export type Action =
   | { t: 'loadSample' }
   | { t: 'clearAll' }
   | { t: 'importData'; state: AppState }
-  | { t: 'toggleLike'; id: string }
-  | { t: 'addComment'; id: string; text: string }
-  | { t: 'toggleFollow'; handle: string }
+  | { t: 'likePost'; id: string }
+  | { t: 'commentPost'; id: string; text: string }
+  | { t: 'shareWorkout'; workoutId: string }
+  | { t: 'deletePost'; id: string }
+  | { t: 'importSharedPost'; code: string }
+  | { t: 'addContact'; name: string; handle: string }
+  | { t: 'deleteContact'; id: string }
+  | { t: 'toggleContactFollow'; id: string }
+  | { t: 'toggleFollowHandle'; handle: string }
 
 export function reducer(state: AppState, action: Action): AppState {
   switch (action.t) {
@@ -162,30 +171,120 @@ export function reducer(state: AppState, action: Action): AppState {
       }
     }
     case 'clearAll':
-      return freshState()
+      return freshState(state.settings.name)
     case 'importData':
       return {
-        ...freshState(),
+        ...freshState(action.state.settings?.name),
         ...action.state,
+        dataset: DATASET_EXERCISES,
         settings: { ...DEFAULT_SETTINGS, ...(action.state.settings ?? {}) },
       }
-    case 'toggleLike':
+    case 'likePost':
       return {
         ...state,
-        liked: state.liked.includes(action.id)
-          ? state.liked.filter((i) => i !== action.id)
-          : [...state.liked, action.id],
+        posts: state.posts.map((p) =>
+          p.id === action.id ? { ...p, likedByMe: !p.likedByMe, likes: p.likes + (p.likedByMe ? -1 : 1) } : p
+        ),
       }
-    case 'addComment': {
-      const list = state.comments[action.id] ?? []
-      return { ...state, comments: { ...state.comments, [action.id]: [...list, action.text] } }
-    }
-    case 'toggleFollow':
+    case 'commentPost':
       return {
         ...state,
-        followed: state.followed.includes(action.handle)
-          ? state.followed.filter((h) => h !== action.handle)
-          : [...state.followed, action.handle],
+        posts: state.posts.map((p) =>
+          p.id === action.id
+            ? { ...p, comments: [...p.comments, { name: state.settings.name, text: action.text, at: Date.now() }] }
+            : p
+        ),
+      }
+    case 'shareWorkout': {
+      const w = state.workouts.find((x) => x.id === action.workoutId)
+      if (!w) return state
+      if (state.posts.some((p) => p.workoutId === w.id)) return state
+      const nameOf = (id: string) =>
+        [...EXERCISES, ...state.dataset, ...state.customs].find((e) => e.id === id)?.name ?? 'Exercise'
+      const post: Post = {
+        id: 'own-' + uid(),
+        workoutId: w.id,
+        author: { name: state.settings.name, handle: 'you', color: 'var(--accent)', kind: 'me' },
+        workout: {
+          name: w.name,
+          start: w.start,
+          durationMin: Math.max(1, Math.round((w.end - w.start) / 60000)),
+          volumeKg: w.exercises.reduce(
+            (sum, e) => sum + e.sets.filter((s) => s.done).reduce((v, s) => v + s.weight * s.reps, 0),
+            0
+          ),
+          exercises: w.exercises.map((e) => ({
+            name: nameOf(e.exerciseId),
+            sets: e.sets.filter((s) => s.done).map((s) => ({
+              type: s.type,
+              weight: s.weight,
+              reps: s.reps,
+              duration: s.duration,
+              distance: s.distance,
+            })),
+          })),
+        },
+        createdAt: Date.now(),
+        likes: 0,
+        likedByMe: false,
+        comments: [],
+      }
+      return { ...state, posts: [post, ...state.posts] }
+    }
+    case 'deletePost':
+      return { ...state, posts: state.posts.filter((p) => p.id !== action.id) }
+    case 'importSharedPost': {
+      const post = codeToPost(action.code)
+      if (!post) return state
+      const handle = post.author.handle
+      const known = state.contacts.some((c) => c.handle === handle)
+      const contacts = known
+        ? state.contacts
+        : [
+            {
+              id: uid(),
+              name: post.author.name,
+              handle,
+              color: post.author.color,
+              followed: true,
+              addedAt: Date.now(),
+            } as Contact,
+            ...state.contacts,
+          ]
+      return { ...state, contacts, posts: [post, ...state.posts] }
+    }
+    case 'addContact': {
+      const handle = action.handle.trim().replace(/^@/, '').toLowerCase() || action.name.toLowerCase()
+      if (state.contacts.some((c) => c.handle === handle)) return state
+      const colors = ['#2f6bff', '#ec4899', '#f59e0b', '#22c55e', '#a855f7', '#06b6d4']
+      return {
+        ...state,
+        contacts: [
+          {
+            id: uid(),
+            name: action.name.trim() || handle,
+            handle,
+            color: colors[state.contacts.length % colors.length],
+            followed: true,
+            addedAt: Date.now(),
+          },
+          ...state.contacts,
+        ],
+      }
+    }
+    case 'deleteContact':
+      return { ...state, contacts: state.contacts.filter((c) => c.id !== action.id) }
+    case 'toggleContactFollow':
+      return {
+        ...state,
+        contacts: state.contacts.map((c) => (c.id === action.id ? { ...c, followed: !c.followed } : c)),
+      }
+    case 'toggleFollowHandle':
+      return {
+        ...state,
+        followedHandles: state.followedHandles.includes(action.handle)
+          ? state.followedHandles.filter((h) => h !== action.handle)
+          : [...state.followedHandles, action.handle],
       }
     default:
       return state
@@ -197,23 +296,33 @@ interface StoreCtx {
   dispatch: React.Dispatch<Action>
   getExercise: (id: string) => Exercise | undefined
   allExercises: Exercise[]
-  posts: ReturnType<typeof samplePosts>
 }
 
 const Ctx = createContext<StoreCtx | null>(null)
 
-export function StoreProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, undefined, loadState)
+export function StoreProvider({
+  accountId,
+  accountName,
+  children,
+}: {
+  accountId: string
+  accountName?: string
+  children: React.ReactNode
+}) {
+  const [state, dispatch] = useReducer(reducer, accountId, (id) => {
+    const loaded = loadState(id)
+    return accountName && !loaded.settings.name ? { ...loaded, settings: { ...loaded.settings, name: accountName } } : loaded
+  })
 
   useEffect(() => {
     try {
-      // the dataset chunk is re-imported on load — never persist it
+      // bulky, account-derivable data is never persisted
       const { dataset: _dataset, ...slim } = state
-      localStorage.setItem(KEY, JSON.stringify(slim))
+      localStorage.setItem(dataKey(accountId), JSON.stringify(slim))
     } catch {
       /* storage full / unavailable */
     }
-  }, [state])
+  }, [state, accountId])
 
   useEffect(() => {
     document.documentElement.dataset.theme = state.settings.theme
@@ -226,7 +335,6 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       dispatch,
       allExercises,
       getExercise: (id: string) => allExercises.find((e) => e.id === id),
-      posts: samplePosts(),
     }
   }, [state])
 

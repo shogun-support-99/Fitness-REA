@@ -23,6 +23,12 @@ export default function WorkoutDetail({ id }: { id: string }) {
 
   if (!workout) return null
 
+  const shared = state.posts.some((p) => p.workoutId === workout.id)
+  const shareWorkout = () => {
+    dispatch({ t: 'shareWorkout', workoutId: workout.id })
+    ui.toast('Shared to your feed')
+  }
+
   const saveAsRoutine = () => {
     dispatch({
       t: 'saveRoutine',
@@ -158,6 +164,9 @@ export default function WorkoutDetail({ id }: { id: string }) {
           </button>
           <button className="btn btn-ghost" onClick={saveAsRoutine} disabled={savedRoutine}>
             <Icon name="note" size={16} /> {savedRoutine ? 'Saved' : 'Save as Routine'}
+          </button>
+          <button className="btn btn-ghost" onClick={shareWorkout} disabled={shared}>
+            <Icon name="upload" size={16} /> {shared ? 'In your feed' : 'Share to feed'}
           </button>
         </div>
       </div>

@@ -16,6 +16,7 @@ import WorkoutDetail from './screens/WorkoutDetail'
 import RoutineDetail from './screens/RoutineDetail'
 import RoutineEditor from './screens/RoutineEditor'
 import HistoryScreen from './screens/History'
+import Contacts from './screens/Contacts'
 
 const TABS: { id: Tab; label: string; icon: IconName }[] = [
   { id: 'home', label: 'Home', icon: 'home' },
@@ -49,6 +50,8 @@ function ScreenLayer({ screen }: { screen: Screen }) {
       return <RoutineEditor id={screen.id} />
     case 'history':
       return <HistoryScreen />
+    case 'contacts':
+      return <Contacts />
   }
 }
 
@@ -120,7 +123,7 @@ function RestBanner({
   )
 }
 
-export default function AppShell() {
+export default function AppShell({ onSignOut }: { onSignOut: () => void }) {
   const { state, dispatch } = useStore()
   const [tab, setTab] = useState<Tab>('home')
   const [stack, setStack] = useState<Screen[]>([])
@@ -132,6 +135,21 @@ export default function AppShell() {
     setToast({ msg, id: Date.now() })
     if (toastTimer.current) window.clearTimeout(toastTimer.current)
     toastTimer.current = window.setTimeout(() => setToast(null), 2000)
+  }, [])
+
+  // a share link opened while signed out parks its code; add it once inside
+  useEffect(() => {
+    try {
+      const code = sessionStorage.getItem('reafit-pending-share')
+      if (code) {
+        sessionStorage.removeItem('reafit-pending-share')
+        dispatch({ t: 'importSharedPost', code })
+        showToast('Shared workout added to your feed')
+      }
+    } catch {
+      /* private mode */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const api = {
@@ -150,6 +168,8 @@ export default function AppShell() {
           : r
       ),
     stopRest: () => setRest(null),
+    logout: onSignOut,
+    switchAccount: onSignOut,
   }
 
   // rest countdown completion

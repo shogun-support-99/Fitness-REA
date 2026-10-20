@@ -11,6 +11,7 @@ export type Screen =
   | { k: 'routine'; id: string }
   | { k: 'routineEditor'; id?: string }
   | { k: 'history' }
+  | { k: 'contacts' }
 
 export interface UIApi {
   push: (s: Screen) => void
@@ -20,6 +21,9 @@ export interface UIApi {
   startRest: (sec: number) => void
   adjustRest: (sec: number) => void
   stopRest: () => void
+  /** local accounts: sign out and switch user */
+  logout: () => void
+  switchAccount: () => void
 }
 
 export const UICtx = createContext<UIApi | null>(null)
