@@ -6,6 +6,8 @@
 
 **Log workouts. Get stronger. Stay consistent.**
 
+**[🌐 Live demo — shogun-support-99.github.io/Fitness-REA](https://shogun-support-99.github.io/Fitness-REA/)**
+
 React · TypeScript · Vite · No backend — your data stays on your device.
 
 </div>
