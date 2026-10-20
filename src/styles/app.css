@@ -594,8 +594,9 @@
   grid-template-columns: 34px minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 0.5fr) 40px;
 }
 .set-grid-readonly .set-row-flat {
-  grid-template-columns: 34px minmax(0, 1.4fr) 0 0 0;
-  gap: 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 .set-result {
   font-size: 14px;
