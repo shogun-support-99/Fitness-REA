@@ -94,7 +94,7 @@ export default function Settings() {
         </div>
 
         <p className="st-foot muted small">
-          REA Fit v1.1.0 · free forever, no ads · your data never leaves this device.
+          REA Fit v1.1.1 · free forever, no ads · your data never leaves this device.
           <br />
           Exercise data: exercises-dataset (MIT) · media © Gym visual
         </p>

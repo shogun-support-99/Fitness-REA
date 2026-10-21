@@ -5,6 +5,7 @@ import Login from './app/screens/Login'
 import SharedPost from './app/screens/SharedPost'
 import { StoreProvider } from './lib/store'
 import { clearSession, getAccount, migrateLegacy, session as readSession, setSession } from './lib/auth'
+import { isDirectLaunch, markLaunched, readLaunchEnv } from './lib/launch'
 
 type Route = { k: 'landing' } | { k: 'app' } | { k: 'shared'; code: string }
 
@@ -16,6 +17,13 @@ function parseHash(): Route {
     const code = new URLSearchParams(q).get('d') ?? ''
     return { k: 'shared', code }
   }
+  if (hash.startsWith('#/landing')) return { k: 'landing' }
+  // bare root: installed PWAs, native shells, phones and returning visitors
+  // skip the marketing page and boot straight into the tracker.
+  // ('#/' and in-page anchors like '#features' stay on the landing.)
+  if (hash === '' || hash === '#') {
+    if (isDirectLaunch(readLaunchEnv())) return { k: 'app' }
+  }
   return { k: 'landing' }
 }
 
@@ -26,6 +34,11 @@ export default function App() {
     const fn = () => setRoute(parseHash())
     window.addEventListener('hashchange', fn)
     return () => window.removeEventListener('hashchange', fn)
+  }, [])
+
+  // stamp every visitor once — returning users never see the landing again
+  useEffect(() => {
+    markLaunched()
   }, [])
 
   // bootstrap: existing users keep their data as the guest account and skip

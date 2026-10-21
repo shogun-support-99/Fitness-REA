@@ -487,7 +487,7 @@ export default function Landing() {
             </div>
             <div className="dl-main">
               <strong>Android app</strong>
-              <span>APK · v1.1.0 · works offline · data stays on your phone</span>
+              <span>APK · v1.1.1 · works offline · data stays on your phone</span>
             </div>
             <Icon name="arrowRight" size={16} className="dl-go" />
           </a>

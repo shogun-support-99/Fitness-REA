@@ -24,8 +24,9 @@ import androidx.webkit.WebViewClientCompat;
  */
 public class MainActivity extends Activity {
 
+    // #/app boots straight into the tracker — the marketing page is web-only
     private static final String ROOT =
-            "https://appassets.androidplatform.net/assets/index.html";
+            "https://appassets.androidplatform.net/assets/index.html#/app";
 
     private WebView webView;
 
@@ -43,7 +44,7 @@ public class MainActivity extends Activity {
         // the app is fully bundled — no file or content access needed
         ws.setAllowFileAccess(false);
         ws.setAllowContentAccess(false);
-        webView.setBackgroundColor(Color.parseColor("#0b0c0f"));
+        webView.setBackgroundColor(Color.parseColor("#000000"));
 
         final WebViewAssetLoader assetLoader = new WebViewAssetLoader.Builder()
                 .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this))
