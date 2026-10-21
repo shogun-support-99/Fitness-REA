@@ -118,18 +118,44 @@ function PhoneMock() {
             Home
           </span>
           <span className="pm-tab">
-            <Icon name="layers" size={14} />
-            Routines
-          </span>
-          <span className="pm-tab">
-            <Icon name="book" size={14} />
-            Exercises
+            <Icon name="dumbbell" size={14} />
+            Workout
           </span>
           <span className="pm-tab">
             <Icon name="user" size={14} />
             Profile
           </span>
+          <span className="pm-homebar" />
         </div>
+      </div>
+    </div>
+  )
+}
+
+/** Workout-tab mock: folder + Hevy routine cards. */
+function RoutinesMock() {
+  return (
+    <div className="mini dark-mock">
+      <div className="mini-title">Workout</div>
+      <div className="rm-folder">
+        <Icon name="chevronDown" size={12} /> My Routines <span>(2)</span>
+      </div>
+      <div className="rm-card">
+        <strong>Push Day</strong>
+        <span className="rm-prev">Bench Press · Incline DB Press · Cable Fly</span>
+        <span className="rm-start">
+          <Icon name="play" size={10} fill="currentColor" /> Start Routine
+        </span>
+      </div>
+      <div className="rm-card">
+        <strong>Leg Day</strong>
+        <span className="rm-prev">Squat · Romanian DL · Leg Press · Calves</span>
+        <span className="rm-start">
+          <Icon name="play" size={10} fill="currentColor" /> Start Routine
+        </span>
+      </div>
+      <div className="rm-add">
+        <Icon name="plus" size={11} /> Add new routine
       </div>
     </div>
   )
@@ -285,6 +311,10 @@ export default function Landing() {
 
       <header className="hero">
         <div className="hero-copy">
+          <div className="hero-pill">
+            <span className="hero-pill-dot" /> New in v1.1 — routine folders, statistics,
+            measurements &amp; calendar
+          </div>
           <h1>
             <Rotator />
           </h1>
@@ -321,20 +351,33 @@ export default function Landing() {
         bullets={[
           'One tap to log weight & reps',
           'Warm-up, drop and failure sets',
-          'Automatic rest timers',
+          'Per-exercise rest timers',
           'Notes on every exercise',
         ]}
         visual={<SetsMock />}
       />
 
       <Feature
+        title="Plan it once. Repeat it forever."
+        copy="Build the routine once — folders keep it tidy, one tap starts it every session."
+        bullets={[
+          'Routine folders to stay organised',
+          'One tap to start any routine',
+          '1,300+ exercises with form guides',
+          'Add your own custom exercises',
+        ]}
+        visual={<RoutinesMock />}
+        flip
+      />
+
+      <Feature
         title="See how far you've come"
         copy="Every set you log feeds your charts, records and history — so progress is impossible to miss."
         bullets={[
-          'Weekly volume charts',
-          'Personal record tracking',
-          'One-rep-max estimates',
-          'Complete exercise history',
+          'Volume, duration & reps charts',
+          'Personal records & 1RM estimates',
+          'Body map with muscle radar chart',
+          'Weight log & workout calendar',
         ]}
         visual={<ChartMock />}
         flip
@@ -444,7 +487,7 @@ export default function Landing() {
             </div>
             <div className="dl-main">
               <strong>Android app</strong>
-              <span>APK · small download · works offline · data stays on your phone</span>
+              <span>APK · v1.1.0 · works offline · data stays on your phone</span>
             </div>
             <Icon name="arrowRight" size={16} className="dl-go" />
           </a>
@@ -498,7 +541,7 @@ export default function Landing() {
           <div>
             <h4>Resources</h4>
             <a href="#/app">Exercise library</a>
-            <a href="#/app">Sample data</a>
+            <a href="#/app">Routines &amp; folders</a>
             <a
               href="https://github.com/shogun-support-99/Fitness-REA"
               target="_blank"
