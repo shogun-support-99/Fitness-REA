@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useStore } from '../lib/store'
-import { beep, fmtClock } from '../lib/utils'
+import { beep, fmtClock, fmtElapsed } from '../lib/utils'
 import { Icon, Logo, type IconName } from '../components/icons'
 import { UICtx, type Screen, type Tab } from './uiContext'
 import Home from './screens/Home'
@@ -126,6 +126,30 @@ function RestBanner({
   )
 }
 
+/** Hevy-style persistent mini-bar: keeps a live session visible from any tab. */
+function ActiveWorkoutBar({ onResume, onDiscard }: { onResume: () => void; onDiscard: () => void }) {
+  const { state } = useStore()
+  const [, setTick] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => setTick((x) => x + 1), 1000)
+    return () => clearInterval(t)
+  }, [])
+  const active = state.active
+  if (!active) return null
+  return (
+    <div className="active-bar" role="status">
+      <button className="active-bar-main" onClick={onResume}>
+        <span className="active-bar-pulse" />
+        <span className="active-bar-label">Active workout</span>
+        <span className="active-bar-timer">{fmtElapsed(Date.now() - active.start)}</span>
+      </button>
+      <button className="active-bar-discard" onClick={onDiscard} aria-label="Discard workout">
+        <Icon name="x" size={16} />
+      </button>
+    </div>
+  )
+}
+
 export default function AppShell({ onSignOut }: { onSignOut: () => void }) {
   const { state, dispatch } = useStore()
   const [tab, setTab] = useState<Tab>('home')
@@ -209,6 +233,17 @@ export default function AppShell({ onSignOut }: { onSignOut: () => void }) {
             <div className="screen pushed" key={stack.length}>
               <ScreenLayer screen={top} />
             </div>
+          )}
+          {state.active && top?.k !== 'logger' && (
+            <ActiveWorkoutBar
+              onResume={() => api.push({ k: 'logger' })}
+              onDiscard={() => {
+                if (confirm('Discard this workout? Logged sets will be lost.')) {
+                  dispatch({ t: 'discardActive' })
+                  showToast('Workout discarded')
+                }
+              }}
+            />
           )}
           {!top && (
             <nav className="tabbar">

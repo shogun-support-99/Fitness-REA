@@ -84,6 +84,40 @@ check('streak alive if only yesterday', workoutStreak([mkW(1), mkW(2)]) === 2)
 
 /* reducer flows */
 let s = freshState()
+/* warm-up ladder + routine diffing (Hevy parity) */
+import { routineFromWorkout, warmupSets, workoutMatchesRoutine } from '../src/lib/utils'
+const ladderKg = warmupSets(100, 'kg')
+check('warmup ladder has 3 steps', ladderKg.length === 3)
+check('warmup percentages round to plates', ladderKg[0].weight === 50 && ladderKg[1].weight === 70 && ladderKg[2].weight === 90)
+check('warmup reps ladder 5/3/1', ladderKg.map((x) => x.reps).join(',') === '5,3,1')
+check('warmup rounds to 2.5kg steps', warmupSets(103, 'kg')[0].weight === 52.5)
+check('warmup lb rounds to 5s', warmupSets(137, 'lb')[0].weight === 70)
+check('warmup skips zero weights', warmupSets(1, 'kg').length === 0)
+check('warmup sets are typed warmup', ladderKg.every((x) => x.type === 'warmup'))
+
+const rt: any = {
+  id: 'r-diff',
+  name: 'Test',
+  createdAt: 0,
+  exercises: [
+    { exerciseId: 'bench', notes: '', sets: [{ type: 'normal', weight: 60, reps: 8, duration: 0, distance: 0 }] },
+  ],
+}
+const wMatch: any = {
+  id: 'w1', name: 'Test', start: 0, end: 1, routineId: 'r-diff',
+  exercises: [
+    { exerciseId: 'bench', notes: '', sets: [{ type: 'normal', weight: 80, reps: 8, duration: 0, distance: 0, done: true }] },
+  ],
+}
+check('same shape matches routine (values may differ)', workoutMatchesRoutine(wMatch, rt))
+const wAddSet: any = { ...wMatch, exercises: [{ ...wMatch.exercises[0], sets: [...wMatch.exercises[0].sets, { type: 'drop', weight: 60, reps: 8, duration: 0, distance: 0, done: true }] }] }
+check('added set flags routine change', !workoutMatchesRoutine(wAddSet, rt))
+const wAddEx: any = { ...wMatch, exercises: [...wMatch.exercises, { exerciseId: 'row', notes: '', sets: [] }] }
+check('added exercise flags routine change', !workoutMatchesRoutine(wAddEx, rt))
+const rebuilt = routineFromWorkout(wAddSet, rt)
+check('routineFromWorkout keeps id/name', rebuilt.id === 'r-diff' && rebuilt.name === 'Test')
+check('routineFromWorkout carries the new sets', rebuilt.exercises[0].sets.length === 2)
+
 /* body distribution: real sets -> per-muscle counts */
 import { levelFor, muscleSets, setsLabel, totalSets } from '../src/lib/bodymap'
 const mk = (primary: string, secondary: string[], sets: number, at: number, done = true) => ({
@@ -143,6 +177,7 @@ check('import seeds workouts + routines', s.workouts.length === 8 && s.routines.
 const routine = s.routines.find((r) => r.name === 'Push Day')!
 s = reducer(s, { t: 'startWorkout', routineId: routine.id })
 check('startWorkout copies routine', s.active!.exercises.length === routine.exercises.length)
+check('active workout remembers its routine', s.active!.routineId === routine.id)
 check('startWorkout sets sets undone', s.active!.exercises.every((e) => e.sets.every((x) => !x.done)))
 check('startWorkout names after routine', s.active!.name === 'Push Day')
 
@@ -158,6 +193,13 @@ check('finished workout is newest', s.workouts[0].name === 'Push Day' && s.worko
 s = reducer(s, { t: 'startAgain', workoutId: s.workouts[0].id })
 check('startAgain recreates with values', s.active!.exercises.some((e) => e.exerciseId === 'push-up'))
 
+const ridBeforeFinish = s.active!.routineId
+s = reducer(s, { t: 'finishActive' })
+check('finish stores the workout', s.workouts.some((w) => w.routineId === ridBeforeFinish))
+check('finish clears active', s.active === null)
+
+s = reducer(s, { t: 'startWorkout' })
+check('empty start has no routineId', s.active!.routineId === undefined)
 s = reducer(s, { t: 'discardActive' })
 check('discard clears active', s.active === null)
 

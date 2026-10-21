@@ -13,9 +13,12 @@ import {
   fmtVolume,
   fmtWeight,
   lastPerformance,
+  routineFromWorkout,
   summarizePrev,
   toDisplayVal,
   toKg,
+  warmupSets,
+  workoutMatchesRoutine,
   workoutSetCount,
   workoutVolume,
 } from '../../lib/utils'
@@ -82,6 +85,8 @@ export default function Logger() {
     sets: number
     prs: PR[]
     name: string
+    workoutId: string
+    routineUpdate?: { id: string; name: string }
   } | null>(null)
 
   useEffect(() => {
@@ -99,6 +104,7 @@ export default function Logger() {
   const addExercises = (ids: string[]) => {
     upd((w) => {
       for (const id of ids) {
+        if (setCount(w) >= SET_CAP) break
         w.exercises.push({
           exerciseId: id,
           notes: '',
@@ -108,8 +114,13 @@ export default function Logger() {
     })
   }
 
+  const SET_CAP = 150
+
+  const setCount = (w: Workout) => w.exercises.reduce((n, e) => n + e.sets.length, 0)
+
   const addSet = (ei: number) =>
     upd((w) => {
+      if (setCount(w) >= SET_CAP) return
       const ex = w.exercises[ei]
       const last = ex.sets[ex.sets.length - 1]
       ex.sets.push({
@@ -139,23 +150,39 @@ export default function Logger() {
 
   const toggleDone = (ei: number, si: number) => {
     if (!active) return
-    const s = active.exercises[ei].sets[si]
+    const ex = active.exercises[ei]
+    const s = ex.sets[si]
     const nowDone = !s.done
-    patchSet(ei, si, { done: nowDone })
-    if (nowDone && state.settings.restAutoStart) {
+    const isCardio = getExercise(ex.exerciseId)?.category === 'cardio'
+    // ghost placeholders: checking an empty row commits the previous values
+    const prevSet = lastPerformance(state.workouts, ex.exerciseId, active.start)?.sets[si]
+    const fill: Partial<LoggedSet> = {}
+    if (nowDone && prevSet) {
+      if (!isCardio && s.weight === 0 && s.reps === 0) {
+        if (prevSet.weight > 0) fill.weight = prevSet.weight
+        if (prevSet.reps > 0) fill.reps = prevSet.reps
+      } else if (isCardio && s.duration === 0 && prevSet.duration > 0) {
+        fill.duration = prevSet.duration
+      }
+    }
+    const effective = { ...s, ...fill }
+    patchSet(ei, si, { done: nowDone, ...fill })
+    // drop sets flow straight into the next set — no rest countdown
+    const nextIsDrop = ex.sets[si + 1]?.type === 'drop'
+    if (nowDone && state.settings.restAutoStart && !nextIsDrop) {
       ui.startRest(state.settings.defaultRest)
     }
     // live PR: celebrate the moment the set is logged, not at the end
-    if (nowDone && s.weight > 0 && s.reps > 0 && s.type !== 'warmup') {
+    if (nowDone && effective.weight > 0 && effective.reps > 0 && effective.type !== 'warmup') {
       const exerciseId = active.exercises[ei].exerciseId
       const priorBest = state.workouts.reduce((best, w) => {
         const e = w.exercises.find((x) => x.exerciseId === exerciseId)
         return e ? Math.max(best, bestSetE1RM(e.sets)) : best
       }, 0)
-      const thisE1rm = e1RM(s.weight, s.reps)
+      const thisE1rm = e1RM(effective.weight, effective.reps)
       if (thisE1rm > priorBest && priorBest > 0) {
         const name = getExercise(exerciseId)?.name ?? 'this lift'
-        ui.toast(`New PR — ${name} ${fmtWeight(s.weight, unit)}×${s.reps}`)
+        ui.toast(`New PR — ${name} ${fmtWeight(effective.weight, unit)}×${effective.reps}`)
       }
     }
   }
@@ -170,17 +197,46 @@ export default function Logger() {
   const finish = () => {
     if (!active) return
     const prs = computePRs(active, state.workouts)
+    const routine = active.routineId ? state.routines.find((r) => r.id === active.routineId) : undefined
     const snapshot = {
       volume: workoutVolume(active),
       durationMin: Math.max(1, Math.round((Date.now() - active.start) / 60000)),
       sets: workoutSetCount(active),
       prs,
       name: active.name,
+      workoutId: active.id,
+      routineUpdate:
+        routine && !workoutMatchesRoutine(active, routine)
+          ? { id: routine.id, name: routine.name }
+          : undefined,
     }
     dispatch({ t: 'finishActive' })
     setFinishing(false)
     setSummary(snapshot)
   }
+
+  /** replace any leading warm-up rows with a freshly generated ladder
+   * (50% x 5, 70% x 3, 90% x 1 of the first working set) */
+  const genWarmups = (ei: number) =>
+    upd((w) => {
+      const ex = w.exercises[ei]
+      const firstWorking = ex.sets.find((s) => s.type !== 'warmup' && s.weight > 0)
+      if (!firstWorking) return
+      // strip leading warm-ups so regenerating never stacks ladders
+      let i = 0
+      while (i < ex.sets.length && ex.sets[i].type === 'warmup') i++
+      const rest = ex.sets.slice(i)
+      const ladder = warmupSets(toDisplayVal(firstWorking.weight, unit), unit).map((ws) => ({
+        type: 'warmup' as const,
+        weight: toKg(ws.weight, unit),
+        reps: ws.reps,
+        duration: 0,
+        distance: 0,
+        done: false,
+      }))
+      if (ladder.length === 0) return
+      ex.sets = [...ladder, ...rest]
+    })
 
   const anyLogged = useMemo(
     () => (active ? active.exercises.some((e) => e.sets.some((s) => s.done)) : false),
@@ -230,6 +286,36 @@ export default function Logger() {
                   </span>
                 </div>
               ))}
+            </div>
+          )}
+          {summary.routineUpdate && (
+            <div className="routine-sync">
+              <p>
+                You changed <strong>{summary.routineUpdate.name}</strong> during this workout.
+                Update the routine to match, or keep the original?
+              </p>
+              <div className="routine-sync-actions">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    const routine = state.routines.find((r) => r.id === summary.routineUpdate!.id)
+                    const workout = state.workouts.find((w) => w.id === summary.workoutId)
+                    if (routine && workout) {
+                      dispatch({ t: 'saveRoutine', routine: routineFromWorkout(workout, routine) })
+                      ui.toast('Routine updated')
+                    }
+                    setSummary({ ...summary, routineUpdate: undefined })
+                  }}
+                >
+                  Update routine
+                </button>
+                <button
+                  className="btn btn-ghost"
+                  onClick={() => setSummary({ ...summary, routineUpdate: undefined })}
+                >
+                  Keep original
+                </button>
+              </div>
             </div>
           )}
           <button className="btn btn-primary btn-lg" onClick={() => ui.resetTo('home')}>
@@ -287,6 +373,18 @@ export default function Logger() {
         <PlateCalculator unit={unit} initial={plates} onClose={() => setPlates(null)} />
       )}
 
+      <div className="logger-telemetry">
+        <span>
+          <Icon name="check" size={13} /> {workoutSetCount(workout)} sets
+        </span>
+        <span>
+          <Icon name="dumbbell" size={13} /> {fmtVolume(workoutVolume(workout), unit)} {unit}
+        </span>
+        <span>
+          <Icon name="clock" size={13} /> {fmtElapsed(Date.now() - workout.start)}
+        </span>
+      </div>
+
       <div className="logger-body">
         {workout.exercises.map((ex, ei) => {
           const meta = getExercise(ex.exerciseId)
@@ -305,6 +403,16 @@ export default function Logger() {
                   </span>
                 </div>
                 <div className="ex-actions">
+                  {!isCardio && (
+                    <button
+                      className="icon-btn"
+                      onClick={() => genWarmups(ei)}
+                      aria-label="Generate warm-up sets"
+                      title="Warm-up calculator (50/70/90%)"
+                    >
+                      <Icon name="zap" size={16} />
+                    </button>
+                  )}
                   <button
                     className={`icon-btn ${showNotes ? 'icon-btn-on' : ''}`}
                     onClick={() => setNotesOpen(notesOpen === ex.exerciseId + ei ? null : ex.exerciseId + ei)}
@@ -358,7 +466,7 @@ export default function Logger() {
                 {ex.sets.map((s, si) => {
                   const letter = TYPE_LETTER[s.type]
                   return (
-                    <div className="set-row" key={si}>
+                    <div className={`set-row ${s.done ? 'set-row-done' : ''}`} key={si}>
                       <button
                         className={`set-type ${letter ? `set-type-${s.type}` : ''}`}
                         onClick={() => cycleType(ei, si)}

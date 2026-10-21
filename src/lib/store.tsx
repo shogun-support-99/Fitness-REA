@@ -82,6 +82,7 @@ export function reducer(state: AppState, action: Action): AppState {
       const active: Workout = {
         id: uid(),
         name: routine ? routine.name : `Workout ${state.workouts.length + 1}`,
+        routineId: routine?.id,
         start: Date.now(),
         end: 0,
         exercises: routine

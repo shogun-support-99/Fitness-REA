@@ -2227,3 +2227,138 @@
   gap: 6px 14px;
   margin-bottom: 12px;
 }
+
+/* ================= HEVY PARITY: LOGGER + ACTIVE BAR ================= */
+
+/* live telemetry strip under the logger header */
+.logger-telemetry {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  padding: 7px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+.logger-telemetry span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  font-variant-numeric: tabular-nums;
+}
+.logger-telemetry svg {
+  color: var(--accent-text);
+}
+
+/* completed set row: subtle green tint (Hevy #132A1E style) */
+.set-row-done {
+  background: rgba(34, 197, 94, 0.07);
+  border-radius: 10px;
+}
+:root[data-theme='dark'] .set-row-done {
+  background: rgba(19, 42, 30, 0.9);
+}
+
+/* persistent active-workout mini-bar */
+.active-bar {
+  position: relative;
+  z-index: 30;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  background: var(--panel-blur);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border);
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+}
+.active-bar-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  background: var(--accent-soft);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 9px 14px;
+  cursor: pointer;
+  min-height: 44px;
+}
+.active-bar-main:hover {
+  border-color: var(--accent);
+}
+.active-bar-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  flex-shrink: 0;
+  animation: active-pulse 1.6s ease-in-out infinite;
+}
+@keyframes active-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .active-bar-pulse { animation: none; }
+}
+.active-bar-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.active-bar-timer {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-text);
+}
+.active-bar-discard {
+  margin-left: 8px;
+  border-radius: 12px;
+}
+
+/* routine sync prompt in the completion sheet */
+.routine-sync {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--card2);
+}
+.routine-sync p {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text2);
+  margin: 0;
+}
+.routine-sync-actions {
+  display: flex;
+  gap: 8px;
+}
+.routine-sync-actions .btn {
+  flex: 1;
+}
+
+/* hypertrophy zone dot in the body distribution table */
+.bd-row-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.bd-zone-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #22c55e;
+  display: inline-block;
+}
