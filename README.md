@@ -60,7 +60,8 @@ npm run preview
 Tests (no framework needed — plain node):
 
 ```bash
-npm run test:logic   # training math, reducer, seed integrity
+npm run test:auth    # accounts: signup, sessions, migration, data isolation
+npm run test:logic   # training math, reducer, feed/social, seed integrity
 npm run test:render  # SSR smoke test of every screen
 ```
 
