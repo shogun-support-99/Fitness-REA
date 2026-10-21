@@ -5,6 +5,7 @@ import {
   getAccount,
   listAccounts,
   setSession,
+  upgradeGuestAccount,
   verifyPassword,
 } from '../../lib/auth'
 import { Logo } from '../../components/icons'
@@ -27,6 +28,11 @@ export default function Login({ onDone }: { onDone: (accountId: string) => void 
   const [confirmPw, setConfirmPw] = useState('')
 
   const [identifier, setIdentifier] = useState('')
+  const [separate, setSeparate] = useState(false)
+
+  const guestAccount = accounts.find((a) => a.kind === 'guest') ?? null
+  // default signup path when guest data exists: convert in place, keep the data
+  const upgradePath = !!guestAccount && !separate
 
   const finish = (accountId: string) => {
     setSession(accountId)
@@ -70,6 +76,7 @@ export default function Login({ onDone }: { onDone: (accountId: string) => void 
     setSelected(account.id)
     setMode('choose')
     setPassword('')
+    setError('')
   }
 
   const signUp = async () => {
@@ -79,6 +86,14 @@ export default function Login({ onDone }: { onDone: (accountId: string) => void 
     if (newPw.length < 4) return setError('Password needs at least 4 characters.')
     if (newPw !== confirmPw) return setError('Passwords don’t match.')
     setBusy(true)
+    if (upgradePath) {
+      // guest -> local, same account id: workouts, routines and feed stay put
+      const account = await upgradeGuestAccount({ name, handle: handle || name, email, password: newPw })
+      setBusy(false)
+      if (account) finish(account.id)
+      else setError('Something went wrong — try again.')
+      return
+    }
     const account = await createAccount({ name, handle: handle || name, email, password: newPw })
     setBusy(false)
     finish(account.id)
@@ -86,6 +101,10 @@ export default function Login({ onDone }: { onDone: (accountId: string) => void 
 
   const guest = async () => {
     if (busy) return
+    if (guestAccount) {
+      finish(guestAccount.id)
+      return
+    }
     setBusy(true)
     const account = await createAccount({ name: 'Athlete', kind: 'guest' })
     setBusy(false)
@@ -120,12 +139,17 @@ export default function Login({ onDone }: { onDone: (accountId: string) => void 
                 </button>
               ))}
             </div>
+            <button className="btn btn-primary btn-lg" onClick={() => setMode('signup')}>
+              {guestAccount ? 'Save this account — keep my data' : 'Create a free account'}
+            </button>
             <button className="btn btn-ghost btn-lg" onClick={() => setMode('signin')}>
               Sign in with another account
             </button>
-            <button className="link-btn login-alt" onClick={guest}>
-              Continue as guest
-            </button>
+            {!guestAccount && (
+              <button className="link-btn login-alt" onClick={guest}>
+                Continue as guest
+              </button>
+            )}
           </>
         )}
 
@@ -206,7 +230,21 @@ export default function Login({ onDone }: { onDone: (accountId: string) => void 
               signUp()
             }}
           >
-            <h2 className="login-sub">Create your free account</h2>
+            <h2 className="login-sub">
+              {upgradePath ? 'Save this account' : 'Create your free account'}
+            </h2>
+            {upgradePath && (
+              <p className="login-keep">
+                You’ve been training as a guest. Add your details and everything — workouts,
+                routines, feed — stays exactly where it is.
+              </p>
+            )}
+            {separate && guestAccount && (
+              <p className="login-keep">
+                Starting fresh. Your guest workouts stay on the guest account — switch back any
+                time from this screen.
+              </p>
+            )}
             <label className="field">
               <span>Name</span>
               <input autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="Alex" />
@@ -239,11 +277,39 @@ export default function Login({ onDone }: { onDone: (accountId: string) => void 
             </label>
             {error && <p className="login-error">{error}</p>}
             <button className="btn btn-primary btn-lg" disabled={busy}>
-              {busy ? 'Creating…' : 'Create account'}
+              {busy ? 'Saving…' : upgradePath ? 'Save account — keep my data' : 'Create account'}
             </button>
-            <button type="button" className="link-btn login-alt" onClick={guest}>
-              Skip — continue as guest
-            </button>
+            {upgradePath ? (
+              <button
+                type="button"
+                className="link-btn login-alt"
+                onClick={() => {
+                  setSeparate(true)
+                  setError('')
+                }}
+              >
+                Create a separate account instead
+              </button>
+            ) : (
+              separate &&
+              guestAccount && (
+                <button
+                  type="button"
+                  className="link-btn login-alt"
+                  onClick={() => {
+                    setSeparate(false)
+                    setError('')
+                  }}
+                >
+                  Back to saving my guest account
+                </button>
+              )
+            )}
+            {!guestAccount && (
+              <button type="button" className="link-btn login-alt" onClick={guest}>
+                Skip — continue as guest
+              </button>
+            )}
           </form>
         )}
 

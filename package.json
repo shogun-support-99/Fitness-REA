@@ -2,14 +2,16 @@
   "name": "rea-fit",
   "private": true,
   "version": "1.0.0",
-  "description": "REA Fit — a Hevy-inspired free workout tracker & gym logger for the web",
+  "description": "REA Fit \u2014 a Hevy-inspired free workout tracker & gym logger for the web",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test:logic": "vite build --ssr scripts/logic-test.ts --outDir .smoke-logic --logLevel error && node .smoke-logic/logic-test.js",
-    "test:render": "vite build --ssr scripts/ssr-smoke.tsx --outDir .smoke --logLevel error && node .smoke/ssr-smoke.js"
+    "test:render": "vite build --ssr scripts/ssr-smoke.tsx --outDir .smoke --logLevel error && node .smoke/ssr-smoke.js",
+    "test:auth": "vite build --ssr scripts/auth-test.ts --outDir .smoke-auth --logLevel error && node .smoke-auth/auth-test.js",
+    "test": "npm run test:logic && npm run test:auth && npm run test:render"
   },
   "dependencies": {
     "@fontsource/barlow-condensed": "^5.3.0",

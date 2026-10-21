@@ -6,7 +6,8 @@
 
 **Log workouts. Get stronger. Stay consistent.**
 
-**[🌐 Live demo — shogun-support-99.github.io/Fitness-REA](https://shogun-support-99.github.io/Fitness-REA/)**
+**[🌐 Website / landing page](https://shogun-support-99.github.io/Fitness-REA/)** ·
+**[🚀 Open the app directly](https://shogun-support-99.github.io/Fitness-REA/#/app)**
 
 React · TypeScript · Vite · No backend — your data stays on your device.
 
@@ -30,7 +31,15 @@ browser. It ships with a marketing landing page and a fully functional training 
 - **📈 Progress** — weekly volume chart, per-exercise 1RM trend lines, streaks, and full history.
 - **📚 Exercise library** — 100+ built-in exercises with equipment and muscle filters, plus custom
   exercise creation. Strength and cardio (min / km) set types.
-- **👥 Feed** — a demo social feed with likes, comments and follows, including your own workouts.
+- **🔐 Accounts** — free local accounts with a proper login page. Passwords are hashed on-device
+  and every account keeps its own data; a guest mode needs no signup at all.
+- **👥 Feed & contacts** — a real social feed: likes, comments, and shareable workouts. Add
+  training partners as contacts and follow the athletes you rate.
+- **🔗 Workout sharing** — share any workout as a link that works through any messenger. The
+  recipient opens a public viewer and adds it to their own feed. No server involved — free by
+  design.
+- **🧮 Plate calculator** — pick a target weight and see the exact plates per side.
+- **⚡ Live PR alerts** — a toast the moment a logged set beats your best estimated 1RM.
 - **⚙️ Settings** — kg / lb units (converted live), dark & light themes, rest timer length, sounds,
   and JSON export / import of all your data.
 
