@@ -2362,3 +2362,14 @@
   background: #22c55e;
   display: inline-block;
 }
+
+/* lift the floating rest banner + toast clear of the active-workout bar */
+.has-active-bar .rest-banner {
+  bottom: 140px;
+}
+.has-active-bar .pushed ~ .rest-banner {
+  bottom: 78px;
+}
+.has-active-bar .toast {
+  bottom: 150px;
+}

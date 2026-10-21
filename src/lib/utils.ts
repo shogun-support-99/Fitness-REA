@@ -175,6 +175,13 @@ export function dayKey(ts: number): string {
 }
 
 /** Monday-based week start. */
+/** midnight (local time) of the day containing ts — DST-safe */
+export function dayStart(ts: number): number {
+  const d = new Date(ts)
+  d.setHours(0, 0, 0, 0)
+  return d.getTime()
+}
+
 export function weekStart(ts: number): number {
   const d = new Date(ts)
   const day = (d.getDay() + 6) % 7
