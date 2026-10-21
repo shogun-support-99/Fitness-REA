@@ -1,4 +1,4 @@
-import type { LoggedSet, Unit, Workout, WorkoutExercise, PR } from './types'
+import type { LoggedSet, Routine, Unit, Workout, WorkoutExercise, PR } from './types'
 
 export const KG_TO_LB = 2.20462262185
 
@@ -255,4 +255,57 @@ export function downloadJSON(filename: string, data: unknown): void {
   a.download = filename
   a.click()
   URL.revokeObjectURL(url)
+}
+
+/* ---------- Hevy-style warm-up generator & routine diffing ---------- */
+
+/**
+ * Percentage-based warm-up ladder (Hevy's Warm-Up Sets Calculator):
+ * 50% x 5, 70% x 3, 90% x 1 before the first working set, rounded to
+ * the nearest sensible plate/dumbbell increment for the unit.
+ */
+export function warmupSets(targetKg: number, unit: 'kg' | 'lb'): { type: 'warmup'; weight: number; reps: number }[] {
+  const round = unit === 'kg' ? (v: number) => Math.round(v / 2.5) * 2.5 : (v: number) => Math.round(v / 5) * 5
+  const steps: [number, number][] = [
+    [0.5, 5],
+    [0.7, 3],
+    [0.9, 1],
+  ]
+  return steps
+    .map(([pct, reps]) => ({ type: 'warmup' as const, weight: Math.max(round(targetKg * pct), 0), reps }))
+    .filter((s) => s.weight > 0)
+}
+
+/**
+ * Does the live workout still match the routine it was started from?
+ * Compares exercise order/ids and per-exercise set counts + types.
+ */
+export function workoutMatchesRoutine(w: Workout, r: Routine): boolean {
+  if (w.exercises.length !== r.exercises.length) return false
+  return w.exercises.every((we, i) => {
+    const re = r.exercises[i]
+    if (!re || we.exerciseId !== re.exerciseId) return false
+    if (we.sets.length !== re.sets.length) return false
+    return we.sets.every((s, j) => s.type === re.sets[j].type)
+  })
+}
+
+/** Rebuild a routine template from a finished workout (keeps id/name). */
+export function routineFromWorkout(w: Workout, r: Routine): Routine {
+  return {
+    id: r.id,
+    name: r.name,
+    createdAt: r.createdAt,
+    exercises: w.exercises.map((we) => ({
+      exerciseId: we.exerciseId,
+      notes: we.notes,
+      sets: we.sets.map((s) => ({
+        type: s.type,
+        weight: s.weight,
+        reps: s.reps,
+        duration: s.duration,
+        distance: s.distance,
+      })),
+    })),
+  }
 }

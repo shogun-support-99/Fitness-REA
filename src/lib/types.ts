@@ -66,6 +66,9 @@ export interface Workout {
   start: number
   end: number
   exercises: WorkoutExercise[]
+  /** set when the workout was started from a routine — enables the
+   * "update routine after changes?" prompt on finish */
+  routineId?: string
 }
 
 /** Target sets used by routines / templates. */

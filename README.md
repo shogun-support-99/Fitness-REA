@@ -23,7 +23,12 @@ browser. It ships with a marketing landing page and a fully functional training 
 - **🏋️ Workout logger** — add exercises, log weight × reps per set, mark warm-up / drop / failure
   sets, use per-exercise notes, and watch the elapsed timer.
 - **⏱️ Rest timer** — completes a set and the countdown starts automatically, with +15s / +1m
-  extensions and a completion chime.
+  extensions and a completion chime. Drop sets skip the countdown and flow straight into the next
+  set, and a live session keeps running as a **floating mini-bar** above the tab navigation.
+- **🔥 Warm-up calculator** — one tap generates a 50%×5 / 70%×3 / 90%×1 ladder before your first
+  working set, rounded to real plate increments.
+- **🔄 Routine sync** — finish a routine-based workout you changed mid-session and the app offers
+  to update the routine or keep the original.
 - **🏆 Personal records** — finishing a workout scans every set against your history and shows your
   new PRs with estimated one-rep max (Epley).
 - **📅 Routines** — build templates once, then start any session with one tap. Repeat past workouts

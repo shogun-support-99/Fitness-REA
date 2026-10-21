@@ -219,17 +219,24 @@ export default function BodyDistribution() {
             <span>Total</span>
             <strong>{setsLabel(total)}</strong>
           </div>
-          {MUSCLES.map((m) => (
-            <div key={m.id} className={`bd-row ${sets[m.id] === 0 ? 'bd-row-zero' : ''}`}>
-              <span>{m.label}</span>
-              <span className="bd-row-sets">
-                {sets[m.id] === 0 ? '—' : setsLabel(sets[m.id])}
-              </span>
-            </div>
-          ))}
+          {MUSCLES.map((m) => {
+            const v = sets[m.id] / 2
+            const inZone = mode === 'week' && v >= 10 && v <= 20
+            return (
+              <div key={m.id} className={`bd-row ${sets[m.id] === 0 ? 'bd-row-zero' : ''}`}>
+                <span className="bd-row-name">
+                  {m.label}
+                  {inZone && <i className="bd-zone-dot" title="In the 10–20 sets/week hypertrophy zone" />}
+                </span>
+                <span className="bd-row-sets">
+                  {sets[m.id] === 0 ? '—' : setsLabel(sets[m.id])}
+                </span>
+              </div>
+            )
+          })}
           <p className="muted small bd-note">
-            Primary muscles count every completed set; secondary muscles count half. {settings.unit === 'kg' ? 'kg' : 'lb'} units
-            don’t affect set counts.
+            Primary muscles count every completed set; secondary muscles count half.
+            {mode === 'week' && ' The green dot marks muscles in the 10–20 sets/week hypertrophy zone.'}
           </p>
         </div>
       </div>
