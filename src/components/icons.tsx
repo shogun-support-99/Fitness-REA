@@ -17,6 +17,7 @@ import {
   ExternalLink,
   Flame,
   Heart,
+  HelpCircle,
   Home,
   Info,
   Layers,
@@ -89,6 +90,7 @@ export type IconName =
   | 'crown'
   | 'external'
   | 'info'
+  | 'help'
   | 'note'
   | 'logbook'
   | 'pause'
@@ -137,6 +139,7 @@ const LUCIDE: Record<IconName, LucideIcon> = {
   crown: Crown,
   external: ExternalLink,
   info: Info,
+  help: HelpCircle,
   note: StickyNote,
   logbook: BookOpenText,
   pause: Pause,

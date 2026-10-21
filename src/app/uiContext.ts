@@ -12,6 +12,7 @@ export type Screen =
   | { k: 'routineEditor'; id?: string }
   | { k: 'history' }
   | { k: 'contacts' }
+  | { k: 'bodyDist' }
 
 export interface UIApi {
   push: (s: Screen) => void

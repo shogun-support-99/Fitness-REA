@@ -39,6 +39,8 @@ browser. It ships with a marketing landing page and a fully functional training 
   recipient opens a public viewer and adds it to their own feed. No server involved — free by
   design.
 - **🧮 Plate calculator** — pick a target weight and see the exact plates per side.
+- **🫀 Body distribution** — a front/back muscle heatmap of sets per muscle group for any day or
+  week, with a per-muscle table, computed from your real history.
 - **⚡ Live PR alerts** — a toast the moment a logged set beats your best estimated 1RM.
 - **⚙️ Settings** — kg / lb units (converted live), dark & light themes, rest timer length, sounds,
   and JSON export / import of all your data.

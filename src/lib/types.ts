@@ -181,7 +181,6 @@ export interface AppState {
   contacts: Contact[]
   /** handles of seeded athletes the user follows */
   followedHandles: string[]
-  sampleLoaded: boolean
 }
 
 export interface PR {

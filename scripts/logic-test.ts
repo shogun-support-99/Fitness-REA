@@ -84,9 +84,61 @@ check('streak alive if only yesterday', workoutStreak([mkW(1), mkW(2)]) === 2)
 
 /* reducer flows */
 let s = freshState()
-s = reducer(s, { t: 'loadSample' })
-check('loadSample seeds data', s.workouts.length === 8 && s.routines.length === 4)
-check('loadSample is idempotent', reducer(s, { t: 'loadSample' }).workouts.length === 8)
+/* body distribution: real sets -> per-muscle counts */
+import { levelFor, muscleSets, setsLabel, totalSets } from '../src/lib/bodymap'
+const mk = (primary: string, secondary: string[], sets: number, at: number, done = true) => ({
+  id: 'w-bm-' + primary + sets + at,
+  name: 'T',
+  start: at,
+  end: at + 3600000,
+  exercises: [
+    {
+      exerciseId: 'x-' + primary,
+      note: '',
+      sets: Array.from({ length: sets }, (_, i) => ({
+        weight: 60,
+        reps: 5,
+        duration: 0,
+        distance: 0,
+        type: 'normal' as const,
+        done: done && i < sets,
+      })),
+    },
+  ],
+})
+const EXERCISES_BY_ID: Record<string, any> = {
+  'x-Chest': { name: 'Bench', equipment: 'Barbell', primary: 'Chest', secondary: ['Triceps'], category: 'strength' },
+  'x-Quads': { name: 'Squat', equipment: 'Barbell', primary: 'Quads', secondary: ['Glutes', 'Hamstrings'], category: 'strength' },
+  'x-Full Body': { name: 'Burpee', equipment: 'Bodyweight', primary: 'Full Body', secondary: [], category: 'strength' },
+  'x-Cardio': { name: 'Run', equipment: 'None', primary: 'Cardio', secondary: [], category: 'cardio' },
+}
+const resolve = (id: string) => EXERCISES_BY_ID[id]
+const DAY0 = 1779500000000 // fixed Monday-ish timestamp
+const bmWorkouts = [
+  mk('Chest', ['Triceps'], 4, DAY0),          // chest +8, triceps +4 (half)
+  mk('Quads', ['Glutes', 'Hamstrings'], 3, DAY0 + 3600000), // quads +6, glutes/ham +3
+  mk('Chest', ['Triceps'], 2, DAY0 + 2 * 86400000),         // next day
+  mk('Full Body', [], 2, DAY0 + 86400000),    // half-set x8 groups
+]
+const daySets = muscleSets(bmWorkouts, DAY0, DAY0 + 86400000, resolve)
+check('primary counts full sets', daySets.chest === 8)
+check('secondary counts half sets', daySets.triceps === 4)
+check('quads/glutes split primary/secondary', daySets.quads === 6 && daySets.glutes === 3 && daySets.hamstrings === 3)
+check('full body spreads half sets', muscleSets(bmWorkouts, DAY0 + 86400000, DAY0 + 2 * 86400000, resolve).chest === 2)
+check('cardio adds no muscle sets', muscleSets([mk('Cardio', [], 5, DAY0)], DAY0, DAY0 + 86400000, resolve).chest === 0)
+check('day window excludes other days', daySets.chest === 8)
+/* week totals: day0 (chest 8, triceps 4, quads 6, glutes 3, hams 3)
+   + day1 full-body (+2 each major) + day2 (chest 4, triceps 2) */
+const weekSets = muscleSets(bmWorkouts, DAY0, DAY0 + 7 * 86400000, resolve)
+check('week window sums all days', weekSets.chest === 14 && weekSets.quads === 8 && weekSets.triceps === 8)
+check('total sets sums muscles', totalSets(weekSets) === 46)
+check('sets label formats halves', setsLabel(12) === '6' && setsLabel(9) === '4.5')
+check('levels bucket 0/1-4/5-9/10+', levelFor(0) === 0 && levelFor(2) === 1 && levelFor(10) === 2 && levelFor(18) === 2 && levelFor(20) === 3)
+check('only done sets count', muscleSets([mk('Chest', [], 3, DAY0, false)], DAY0, DAY0 + 86400000, resolve).chest === 0)
+
+/* seed through importData (the JSON-import path real users have) */
+s = reducer(s, { t: 'importData', state: { ...s, workouts: sampleWorkouts(), routines: sampleRoutines() } })
+check('import seeds workouts + routines', s.workouts.length === 8 && s.routines.length === 4)
 
 const routine = s.routines.find((r) => r.name === 'Push Day')!
 s = reducer(s, { t: 'startWorkout', routineId: routine.id })

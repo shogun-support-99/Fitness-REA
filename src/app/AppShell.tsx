@@ -17,6 +17,7 @@ import RoutineDetail from './screens/RoutineDetail'
 import RoutineEditor from './screens/RoutineEditor'
 import HistoryScreen from './screens/History'
 import Contacts from './screens/Contacts'
+import BodyDistribution from './screens/BodyDistribution'
 
 const TABS: { id: Tab; label: string; icon: IconName }[] = [
   { id: 'home', label: 'Home', icon: 'home' },
@@ -52,6 +53,8 @@ function ScreenLayer({ screen }: { screen: Screen }) {
       return <HistoryScreen />
     case 'contacts':
       return <Contacts />
+    case 'bodyDist':
+      return <BodyDistribution />
   }
 }
 
