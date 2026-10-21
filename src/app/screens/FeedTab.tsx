@@ -79,7 +79,7 @@ export default function FeedTab({ embedded = false }: { embedded?: boolean }) {
 
   if (embedded) {
     return (
-      <div className="tab-screen subscreen-embedded">
+      <div className="tab-screen subscreen subscreen-embedded">
         <header className="sub-head">
           <button className="icon-btn" onClick={() => ui.pop()} aria-label="Back">
             <Icon name="chevronLeft" size={22} />

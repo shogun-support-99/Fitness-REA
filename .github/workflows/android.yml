@@ -79,12 +79,14 @@ jobs:
         run: |
           cp android/app/build/outputs/apk/release/app-release.apk rea-fit.apk
           ls -lh rea-fit.apk
-          TAG="v1.0.0"
+          # the release tag follows the version in android/app/build.gradle
+          TAG="v$(grep -oP "versionName '\\K[^']+" android/app/build.gradle)"
+          echo "Publishing $TAG"
           if gh release view "$TAG" -R "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
             gh release upload "$TAG" rea-fit.apk --clobber -R "$GITHUB_REPOSITORY"
           else
             gh release create "$TAG" rea-fit.apk \
-              --title "REA Fit v1.0.0 — Android" \
-              --notes "Install-once Android build. Works fully offline; your data lives on your phone. Download \`rea-fit.apk\`, open it, and allow installs from this source. Updates install over previous builds." \
+              --title "REA Fit $TAG — Android" \
+              --notes "Install-once Android build. Works fully offline; your data lives on your phone. Download \`rea-fit.apk\`, open it, and allow installs from this source. Updates install over previous builds (same signing key)." \
               -R "$GITHUB_REPOSITORY"
           fi

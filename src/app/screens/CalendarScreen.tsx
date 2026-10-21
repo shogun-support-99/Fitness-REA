@@ -3,7 +3,7 @@ import { useStore } from '../../lib/store'
 import { useUI } from '../uiContext'
 import { Icon } from '../../components/icons'
 import { Sheet } from '../../components/ui'
-import { dayKey, dayStart, restDays, weekStreak } from '../../lib/utils'
+import { dayKey, restDays, weekStreak } from '../../lib/utils'
 import type { Workout } from '../../lib/types'
 
 const DAY = 86400000

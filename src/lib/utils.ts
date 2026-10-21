@@ -211,6 +211,8 @@ export function weekStreak(workouts: Workout[]): number {
   if (weeks.size === 0) return 0
   let streak = 0
   let ws = weekStart(Date.now())
+  // the streak stays alive before this week's first workout (like the daily streak)
+  if (!weeks.has(ws)) ws -= 7 * 86400000
   while (weeks.has(ws)) {
     streak++
     ws -= 7 * 86400000
@@ -226,6 +228,13 @@ export function restDays(workouts: Workout[]): number {
   const totalDays = Math.round((today - first) / 86400000) + 1
   const workoutDays = new Set(workouts.map((w) => dayKey(w.start))).size
   return Math.max(0, totalDays - workoutDays)
+}
+
+/** 1st / 2nd / 3rd / 4th / 11th / 21st … */
+export function ordinal(n: number): string {
+  const s = ['th', 'st', 'nd', 'rd']
+  const v = n % 100
+  return n + (s[(v - 20) % 10] ?? s[v] ?? s[0])
 }
 
 /** "1min 30s" / "45s" / "2min 0s" — Hevy's rest pill format. */

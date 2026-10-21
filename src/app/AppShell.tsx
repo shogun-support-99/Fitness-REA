@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useStore } from '../lib/store'
 import { beep, fmtClock, fmtElapsed } from '../lib/utils'
-import { Icon, type IconName } from '../components/icons'
+import { Icon, Logo, type IconName } from '../components/icons'
 import { Confirm } from '../components/ui'
 import { UICtx, type Screen, type Tab } from './uiContext'
 import Home from './screens/Home'
@@ -255,6 +255,12 @@ export default function AppShell({ onSignOut }: { onSignOut: () => void }) {
           )}
           {!top && (
             <nav className="tabbar" aria-label="Main navigation">
+              <div className="tabbar-brand">
+                <Logo size={26} />
+                <span>
+                  REA<b>FIT</b>
+                </span>
+              </div>
               {TABS.map((t) => (
                 <button
                   key={t.id}

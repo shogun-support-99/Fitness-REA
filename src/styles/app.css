@@ -1549,7 +1549,14 @@
     justify-content: flex-start;
     gap: 12px;
     font-size: 14px;
-    padding: 12px 14px;
+    padding: 8px 10px;
+  }
+  .tab .tab-label {
+    font-size: 14px;
+  }
+  .tab .tab-pill {
+    width: 40px;
+    height: 30px;
   }
   .list {
     grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
@@ -2707,6 +2714,10 @@
   padding: 12px;
   box-sizing: border-box;
 }
+.hv-chart-card .chart {
+  width: 100%;
+  height: 100%;
+}
 .hv-chart-empty {
   text-align: center;
   color: var(--text2);
@@ -2734,6 +2745,16 @@
 .hv-metric-on {
   background: var(--accent);
   color: #fff;
+}
+.hv-cta:active,
+.hv-action:active,
+.hv-tile:active,
+.rt-start:active,
+.hv-metric:active {
+  opacity: 0.75;
+}
+.rt-start:active {
+  transform: scale(0.985);
 }
 .hv-section-label {
   font-size: 16px;
@@ -3058,7 +3079,7 @@
   background: var(--panel);
   border-bottom: 1px solid var(--border);
   position: sticky;
-  top: 53px;
+  top: calc(44px + env(safe-area-inset-top, 0px));
   z-index: 5;
 }
 .cal-title-btn {

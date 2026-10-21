@@ -169,9 +169,10 @@ export default function Logger() {
     patchSet(ei, si, { done: nowDone, ...fill })
     // drop sets flow straight into the next set — no rest countdown
     const nextIsDrop = ex.sets[si + 1]?.type === 'drop'
-    if (nowDone && state.settings.restAutoStart && !nextIsDrop) {
-      // per-exercise rest override (set in the routine editor) beats the default
-      ui.startRest(ex.restSec ?? state.settings.defaultRest)
+    const restSec = ex.restSec ?? state.settings.defaultRest
+    // restSec 0 = "Rest: OFF" in the routine editor — skip the timer entirely
+    if (nowDone && restSec > 0 && state.settings.restAutoStart && !nextIsDrop) {
+      ui.startRest(restSec)
     }
     // live PR: celebrate the moment the set is logged, not at the end
     if (nowDone && effective.weight > 0 && effective.reps > 0 && effective.type !== 'warmup') {
