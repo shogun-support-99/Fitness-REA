@@ -4,6 +4,7 @@ import { Icon } from '../../components/icons'
 import { Avatar } from '../../components/ui'
 import {
   dayKey,
+  dayStart,
   fmtDuration,
   fmtVolume,
   greeting,
@@ -23,7 +24,7 @@ export default function Home() {
   const unit = settings.unit
 
   const ws = weekStart(Date.now())
-  const weekDays = Array.from({ length: 7 }, (_, i) => ws + i * 86400000)
+  const weekDays = Array.from({ length: 7 }, (_, i) => dayStart(ws + i * 86400000))
   const workoutDays = new Set(workouts.map((w) => dayKey(w.start)))
   const todayKey = dayKey(Date.now())
 

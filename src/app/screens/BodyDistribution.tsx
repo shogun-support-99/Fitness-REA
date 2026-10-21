@@ -14,6 +14,7 @@ import {
   type MuscleId,
   type MuscleSets,
 } from '../../lib/bodymap'
+import { dayStart } from '../../lib/utils'
 
 const DAY_MS = 86400000
 const WEEK_LETTERS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
@@ -21,12 +22,6 @@ const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
 ]
-
-const dayStart = (ts: number) => {
-  const d = new Date(ts)
-  d.setHours(0, 0, 0, 0)
-  return d.getTime()
-}
 
 /** "18–24 October" / "28 October – 3 November" */
 function rangeLabel(from: number, to: number) {
@@ -53,7 +48,7 @@ export default function BodyDistribution() {
   const weekFrom = weekStart(Date.now()) + weekOffset * 7 * DAY_MS
   const weekTo = weekFrom + 7 * DAY_MS
   const days = useMemo(
-    () => Array.from({ length: 7 }, (_, i) => dayStart(weekFrom) + i * DAY_MS),
+    () => Array.from({ length: 7 }, (_, i) => dayStart(weekFrom + i * DAY_MS)),
     [weekFrom]
   )
   const today = dayStart(Date.now())
@@ -79,7 +74,7 @@ export default function BodyDistribution() {
     setWeekOffset((w) => w + dir)
     if (mode === 'day') {
       // carry the weekday into the neighbouring week
-      setSelectedDay((d) => d + dir * 7 * DAY_MS)
+      setSelectedDay((d) => dayStart(d + dir * 7 * DAY_MS))
     }
   }
 

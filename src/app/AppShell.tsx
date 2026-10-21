@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useStore } from '../lib/store'
 import { beep, fmtClock, fmtElapsed } from '../lib/utils'
 import { Icon, Logo, type IconName } from '../components/icons'
+import { Confirm } from '../components/ui'
 import { UICtx, type Screen, type Tab } from './uiContext'
 import Home from './screens/Home'
 import RoutinesTab from './screens/RoutinesTab'
@@ -156,6 +157,7 @@ export default function AppShell({ onSignOut }: { onSignOut: () => void }) {
   const [stack, setStack] = useState<Screen[]>([])
   const [rest, setRest] = useState<RestState | null>(null)
   const [toast, setToast] = useState<{ msg: string; id: number } | null>(null)
+  const [confirmDiscard, setConfirmDiscard] = useState(false)
   const toastTimer = useRef<number | null>(null)
 
   const showToast = useCallback((msg: string) => {
@@ -213,11 +215,12 @@ export default function AppShell({ onSignOut }: { onSignOut: () => void }) {
   }, [rest, state.settings.sound])
 
   const top = stack.length > 0 ? stack[stack.length - 1] : null
+  const showBar = !!state.active && top?.k !== 'logger'
 
   return (
     <UICtx.Provider value={api}>
       <div className="app-root">
-        <div className="app-frame">
+        <div className={`app-frame ${showBar ? 'has-active-bar' : ''}`}>
           <div className={`app-scroll ${top ? 'app-scroll-pushed' : ''}`}>
             {!top && (
               <main className="screen" key={tab}>
@@ -234,15 +237,10 @@ export default function AppShell({ onSignOut }: { onSignOut: () => void }) {
               <ScreenLayer screen={top} />
             </div>
           )}
-          {state.active && top?.k !== 'logger' && (
+          {showBar && (
             <ActiveWorkoutBar
               onResume={() => api.push({ k: 'logger' })}
-              onDiscard={() => {
-                if (confirm('Discard this workout? Logged sets will be lost.')) {
-                  dispatch({ t: 'discardActive' })
-                  showToast('Workout discarded')
-                }
-              }}
+              onDiscard={() => setConfirmDiscard(true)}
             />
           )}
           {!top && (
@@ -266,6 +264,20 @@ export default function AppShell({ onSignOut }: { onSignOut: () => void }) {
             </nav>
           )}
           {rest && <RestBanner rest={rest} adjust={api.adjustRest} stop={api.stopRest} />}
+          {confirmDiscard && (
+            <Confirm
+              title="Discard workout?"
+              message="Your logged sets for this session will be lost."
+              confirmLabel="Discard"
+              danger
+              onConfirm={() => {
+                dispatch({ t: 'discardActive' })
+                setConfirmDiscard(false)
+                showToast('Workout discarded')
+              }}
+              onCancel={() => setConfirmDiscard(false)}
+            />
+          )}
           {toast && (
             <div className="toast" key={toast.id}>
               {toast.msg}

@@ -217,7 +217,12 @@ export default function Logger() {
 
   /** replace any leading warm-up rows with a freshly generated ladder
    * (50% x 5, 70% x 3, 90% x 1 of the first working set) */
-  const genWarmups = (ei: number) =>
+  const genWarmups = (ei: number) => {
+    const hasWorking = active?.exercises[ei].sets.some((s) => s.type !== 'warmup' && s.weight > 0)
+    if (!hasWorking) {
+      ui.toast('Enter your working weight first')
+      return
+    }
     upd((w) => {
       const ex = w.exercises[ei]
       const firstWorking = ex.sets.find((s) => s.type !== 'warmup' && s.weight > 0)
@@ -237,6 +242,7 @@ export default function Logger() {
       if (ladder.length === 0) return
       ex.sets = [...ladder, ...rest]
     })
+  }
 
   const anyLogged = useMemo(
     () => (active ? active.exercises.some((e) => e.sets.some((s) => s.done)) : false),
@@ -329,6 +335,9 @@ export default function Logger() {
   if (!active) return null
   const workout = active
 
+  /** chevron: minimize — the session keeps running in the mini-bar */
+  const minimize = () => ui.pop()
+
   const exit = () => {
     if (anyLogged || workout.exercises.length > 0) setConfirmExit(true)
     else ui.resetTo('home')
@@ -337,8 +346,11 @@ export default function Logger() {
   return (
     <div className="logger">
       <header className="logger-head">
-        <button className="icon-btn" onClick={exit} aria-label="Close workout">
-          <Icon name="x" size={20} />
+        <button className="icon-btn" onClick={minimize} aria-label="Minimize workout" title="Minimize — keeps the session running">
+          <Icon name="chevronDown" size={20} />
+        </button>
+        <button className="icon-btn icon-danger" onClick={exit} aria-label="Discard workout" title="Discard workout">
+          <Icon name="trash" size={17} />
         </button>
         <input
           className="logger-name"
