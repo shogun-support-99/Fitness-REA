@@ -13,6 +13,7 @@ import {
   workoutStreak,
   workoutVolume,
 } from '../src/lib/utils'
+import { isDirectLaunch } from '../src/lib/launch'
 
 let failures = 0
 function check(name: string, cond: boolean) {
@@ -29,6 +30,16 @@ check('e1RM 1 rep = weight', e1RM(120, 1) === 120)
 check('fmtWeight kg', fmtWeight(62.5, 'kg') === '62.5')
 check('fmtWeight lb converts', fmtWeight(100, 'lb') === '220.5')
 check('fmtElapsed', fmtElapsed(754000) === '12:34')
+
+/* launch routing: who skips the marketing landing page */
+const noBypass = { standalone: false, iosStandalone: false, capacitor: false, viewportWidth: 1280, launchedBefore: false }
+check('launch: desktop first visit sees landing', !isDirectLaunch(noBypass))
+check('launch: 769px desktop sees landing', !isDirectLaunch({ ...noBypass, viewportWidth: 769 }))
+check('launch: 768px phone bypasses', isDirectLaunch({ ...noBypass, viewportWidth: 768 }))
+check('launch: standalone PWA bypasses', isDirectLaunch({ ...noBypass, standalone: true }))
+check('launch: iOS home-screen app bypasses', isDirectLaunch({ ...noBypass, iosStandalone: true }))
+check('launch: Capacitor native shell bypasses', isDirectLaunch({ ...noBypass, capacitor: true }))
+check('launch: returning visitor bypasses', isDirectLaunch({ ...noBypass, launchedBefore: true }))
 
 /* exercise db */
 check('100+ curated exercises', EXERCISES.length >= 100)

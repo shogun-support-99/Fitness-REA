@@ -9,7 +9,22 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="REA Fit" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0b0c0f" />
+    <script>
+      // pre-paint: anyone heading into the app gets a black background, so the
+      // white marketing page never flashes before React mounts
+      try {
+        var h = location.hash
+        var toApp =
+          h.indexOf('#/app') === 0 ||
+          ((h === '' || h === '#') &&
+            (matchMedia('(display-mode: standalone)').matches ||
+              navigator.standalone === true ||
+              innerWidth <= 768 ||
+              localStorage.getItem('reafit_launched') === 'true'))
+        document.documentElement.style.background = toApp ? '#000000' : '#ffffff'
+      } catch (e) {}
+    </script>
+    <meta name="theme-color" content="#000000" />
     <meta
       name="description"
       content="REA Fit — a free workout tracker and gym logger. Plan routines, log every set, track personal records, and watch your strength take off."

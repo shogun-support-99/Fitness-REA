@@ -67,24 +67,36 @@ export default function Home() {
       </div>
 
       <div className="stat-row">
-        <div className="card stat-card streak-card">
-          <Icon name="flame" size={20} className="flame" />
-          <div>
-            <strong>{streak}</strong>
-            <span>day streak</span>
+        <div className="card stat-card">
+          <div className="stat-num">
+            <span>{streak}</span>
+            <Icon name="flame" size={16} className="flame" />
           </div>
+          <span className="stat-label">
+            <span className="label-short">Streak</span>
+            <span className="label-full">Day streak</span>
+          </span>
         </div>
         <div className="card stat-card">
-          <strong>{thisWeek.length}</strong>
-          <span>workouts</span>
+          <div className="stat-num">
+            <span>{thisWeek.length}</span>
+          </div>
+          <span className="stat-label">Workouts</span>
         </div>
         <div className="card stat-card">
-          <strong>{fmtVolume(weekVolume, unit)}</strong>
-          <span>volume ({unit})</span>
+          <div className="stat-num">
+            <span>{fmtVolume(weekVolume, unit)}</span>
+          </div>
+          <span className="stat-label">
+            <span className="label-short">Volume</span>
+            <span className="label-full">Volume ({unit})</span>
+          </span>
         </div>
         <div className="card stat-card">
-          <strong>{weekDuration ? fmtDuration(weekDuration) : '0m'}</strong>
-          <span>trained</span>
+          <div className="stat-num">
+            <span>{weekDuration ? fmtDuration(weekDuration) : '0m'}</span>
+          </div>
+          <span className="stat-label">Trained</span>
         </div>
       </div>
 
@@ -101,14 +113,14 @@ export default function Home() {
 
       {active ? (
         <button
-          className="btn btn-primary btn-lg continue-btn"
+          className="btn btn-primary btn-lg home-cta"
           onClick={() => ui.push({ k: 'logger' })}
         >
           <Icon name="play" size={18} fill="currentColor" />
           Continue Workout
         </button>
       ) : (
-        <button className="btn btn-primary btn-lg" onClick={startEmpty}>
+        <button className="btn btn-primary btn-lg home-cta" onClick={startEmpty}>
           <Icon name="plus" size={20} />
           Start Empty Workout
         </button>
@@ -180,7 +192,7 @@ export default function Home() {
       </section>
 
       <section className="section">
-        <button className="card row-item" onClick={() => ui.push({ k: 'exercises' })}>
+        <button className="card row-item row-item-full" onClick={() => ui.push({ k: 'exercises' })}>
           <div className="row-icon">
             <Icon name="book" size={20} />
           </div>

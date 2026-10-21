@@ -273,7 +273,6 @@ export default function AppShell({ onSignOut }: { onSignOut: () => void }) {
                   <span className="tab-label">{t.label}</span>
                 </button>
               ))}
-              <div className="tabbar-homebar" aria-hidden="true" />
             </nav>
           )}
           {rest && <RestBanner rest={rest} adjust={api.adjustRest} stop={api.stopRest} />}
