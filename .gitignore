@@ -4,3 +4,10 @@ dist/
 .DS_Store
 npm-debug.log*
 .smoke/
+.smoke-*/
+
+# android build outputs (CI builds in a clean checkout)
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties

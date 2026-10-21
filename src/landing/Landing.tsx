@@ -276,6 +276,7 @@ export default function Landing() {
           <a href="#features">Features</a>
           <a href="#community">Community</a>
           <a href="#guides">Guides</a>
+          <a href="#download">Get the app</a>
         </div>
         <a className="btn-cta" href="#/app">
           Open the app
@@ -296,6 +297,12 @@ export default function Landing() {
             <a className="btn-cta btn-cta-lg" href="#/app">
               Start your first workout
               <Icon name="arrowRight" size={16} />
+            </a>
+            <a
+              className="btn-outline btn-outline-lg"
+              href="https://github.com/shogun-support-99/Fitness-REA/releases/latest/download/rea-fit.apk"
+            >
+              <Icon name="download" size={16} /> Android app
             </a>
             <a className="btn-outline" href="#features">
               Explore features
@@ -420,6 +427,45 @@ export default function Landing() {
         </div>
       </section>
 
+      <section className="download-band" id="download">
+        <h2>Take it to the gym</h2>
+        <p className="lead">
+          Install it on your Android phone or just open it in any browser — either way, your
+          workouts live on your device and nowhere else. No account required, no cloud, no
+          tracking. Ever.
+        </p>
+        <div className="dl-grid">
+          <a
+            className="dl-card"
+            href="https://github.com/shogun-support-99/Fitness-REA/releases/latest/download/rea-fit.apk"
+          >
+            <div className="dl-icon dl-icon-android">
+              <Icon name="download" size={22} />
+            </div>
+            <div className="dl-main">
+              <strong>Android app</strong>
+              <span>APK · small download · works offline · data stays on your phone</span>
+            </div>
+            <Icon name="arrowRight" size={16} className="dl-go" />
+          </a>
+          <a className="dl-card" href="#/app">
+            <div className="dl-icon dl-icon-web">
+              <Icon name="monitor" size={22} />
+            </div>
+            <div className="dl-main">
+              <strong>Web app</strong>
+              <span>No install · any device · always up to date</span>
+            </div>
+            <Icon name="arrowRight" size={16} className="dl-go" />
+          </a>
+        </div>
+        <p className="dl-note">
+          Installing an APK directly? Your browser will ask permission once — that’s Android
+          verifying you meant to install it. REA Fit is open source; the build comes straight from
+          this repo’s releases.
+        </p>
+      </section>
+
       <section className="cta-band">
         <h2>Your first workout is one tap away</h2>
         <p>Join the lifters who never skip logging day. Free forever.</p>
@@ -445,6 +491,7 @@ export default function Landing() {
           <div>
             <h4>Product</h4>
             <a href="#/app">Web app</a>
+            <a href="#download">Android app</a>
             <a href="#features">Features</a>
             <a href="#guides">Guides</a>
           </div>

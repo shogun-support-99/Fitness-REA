@@ -1,0 +1,43 @@
+<svg width="1280" height="360" viewBox="0 0 1280 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="REA Fit — the free, open-source workout tracker">
+  <defs>
+    <radialGradient id="glow" cx="22%" cy="50%" r="55%">
+      <stop offset="0%" stop-color="#2f6bff" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#2f6bff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#2f6bff" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#2f6bff"/>
+      <stop offset="100%" stop-color="#2f6bff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1280" height="360" fill="#0b0c0f"/>
+  <rect width="1280" height="360" fill="url(#glow)"/>
+  <rect x="0" y="358" width="1280" height="2" fill="url(#bar)"/>
+
+  <!-- logo mark: dumbbell in rounded square -->
+  <g transform="translate(96, 118)">
+    <rect width="124" height="124" rx="30" fill="#0e0f13" stroke="#23262e" stroke-width="2"/>
+    <g stroke="#2f6bff" stroke-width="10" stroke-linecap="round" fill="none">
+      <path d="M20 62h8"/>
+      <path d="M96 62h8"/>
+      <path d="M31 44v36"/>
+      <path d="M93 44v36"/>
+      <path d="M39 62h46"/>
+    </g>
+  </g>
+
+  <!-- wordmark -->
+  <text x="268" y="178" font-family="-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="88" font-weight="800" fill="#ffffff" letter-spacing="1">REA<tspan fill="#4d84ff">FIT</tspan></text>
+  <text x="272" y="226" font-family="-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="27" font-weight="600" fill="#9aa1b0">The free, open-source workout tracker — your data never leaves your device.</text>
+
+  <!-- chips -->
+  <g font-family="-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="17" font-weight="700">
+    <rect x="272" y="258" width="150" height="38" rx="19" fill="#101218" stroke="#23262e"/>
+    <text x="347" y="283" fill="#c7cdd9" text-anchor="middle">1,300+ lifts</text>
+    <rect x="434" y="258" width="150" height="38" rx="19" fill="#101218" stroke="#23262e"/>
+    <text x="509" y="283" fill="#c7cdd9" text-anchor="middle">Web + Android</text>
+    <rect x="596" y="258" width="170" height="38" rx="19" fill="#101218" stroke="#23262e"/>
+    <text x="681" y="283" fill="#c7cdd9" text-anchor="middle">0 ads · 0 paywall</text>
+  </g>
+</svg>
