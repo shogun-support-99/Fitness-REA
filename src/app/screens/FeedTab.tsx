@@ -7,7 +7,8 @@ import type { Post } from '../../lib/types'
 import { postToCode, sharedPostLink } from '../../lib/share'
 import { fmtVolume, timeAgo } from '../../lib/utils'
 
-export default function FeedTab() {
+/** The feed itself — reusable inside the Profile tab (Hevy embeds it there). */
+export function FeedPosts({ onShared }: { onShared?: () => void }) {
   const { state, dispatch } = useStore()
   const ui = useUI()
   const [shareOpen, setShareOpen] = useState(false)
@@ -20,22 +21,11 @@ export default function FeedTab() {
     dispatch({ t: 'shareWorkout', workoutId })
     setShareOpen(false)
     ui.toast('Shared to your feed')
+    onShared?.()
   }
 
   return (
-    <div className="tab-screen">
-      <header className="page-head">
-        <h1>Feed</h1>
-        <div className="head-actions">
-          <button className="icon-btn" aria-label="Contacts" onClick={() => ui.push({ k: 'contacts' })}>
-            <Icon name="users" size={20} />
-          </button>
-          <button className="btn btn-primary btn-sm" onClick={() => setShareOpen(true)}>
-            <Icon name="upload" size={15} /> Share
-          </button>
-        </div>
-      </header>
-
+    <>
       {shareOpen && (
         <Sheet title="Share a workout" onClose={() => setShareOpen(false)}>
           {shareable.length === 0 ? (
@@ -67,10 +57,54 @@ export default function FeedTab() {
         ))}
       </div>
 
+      <div className="feed-inline-actions">
+        <button className="btn btn-ghost" onClick={() => ui.push({ k: 'contacts' })}>
+          <Icon name="users" size={16} /> Contacts
+        </button>
+        <button className="btn btn-primary" onClick={() => setShareOpen(true)}>
+          <Icon name="upload" size={15} /> Share a workout
+        </button>
+      </div>
+
       <p className="muted small feed-note">
         Your shares, your contacts and the athletes you follow. Share a workout, copy the link,
         send it to a friend — it lands in their feed when they open it.
       </p>
+    </>
+  )
+}
+
+export default function FeedTab({ embedded = false }: { embedded?: boolean }) {
+  const ui = useUI()
+
+  if (embedded) {
+    return (
+      <div className="tab-screen subscreen-embedded">
+        <header className="sub-head">
+          <button className="icon-btn" onClick={() => ui.pop()} aria-label="Back">
+            <Icon name="chevronLeft" size={22} />
+          </button>
+          <h2>Feed</h2>
+          <span className="sub-head-spacer" />
+        </header>
+        <div className="sub-body">
+          <FeedPosts />
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="tab-screen">
+      <header className="page-head">
+        <h1>Feed</h1>
+        <div className="head-actions">
+          <button className="icon-btn" aria-label="Contacts" onClick={() => ui.push({ k: 'contacts' })}>
+            <Icon name="users" size={20} />
+          </button>
+        </div>
+      </header>
+      <FeedPosts />
     </div>
   )
 }

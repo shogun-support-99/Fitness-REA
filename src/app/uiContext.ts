@@ -1,6 +1,7 @@
 import { createContext, useContext } from 'react'
 
-export type Tab = 'home' | 'routines' | 'exercises' | 'feed' | 'profile'
+/** Hevy-style 3-tab shell: Home, Workout, Profile. */
+export type Tab = 'home' | 'workout' | 'profile'
 
 export type Screen =
   | { k: 'logger' }
@@ -13,6 +14,11 @@ export type Screen =
   | { k: 'history' }
   | { k: 'contacts' }
   | { k: 'bodyDist' }
+  | { k: 'settings' }
+  | { k: 'measurements' }
+  | { k: 'calendar' }
+  | { k: 'exercises' }
+  | { k: 'feed' }
 
 export interface UIApi {
   push: (s: Screen) => void

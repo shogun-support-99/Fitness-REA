@@ -1,265 +1,323 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useStore } from '../../lib/store'
 import { useUI } from '../uiContext'
 import { Icon } from '../../components/icons'
-import { Avatar, Confirm, Segmented, Toggle } from '../../components/ui'
+import { Avatar, Confirm, Segmented, Sheet } from '../../components/ui'
 import { BarChart } from '../../components/charts'
-import type { AppState } from '../../lib/types'
-import { downloadJSON, fmtVolume, weekStart, workoutStreak, workoutVolume } from '../../lib/utils'
+import { FeedPosts } from './FeedTab'
 import { getAccount, session } from '../../lib/auth'
+import {
+  fmtVolume,
+  timeAgo,
+  weekStart,
+  workoutStreak,
+  workoutVolume,
+  workoutSetCount,
+} from '../../lib/utils'
+
+type Metric = 'duration' | 'volume' | 'reps'
+type Range = 1 | 3 | 6
+const RANGES: { value: Range; label: string }[] = [
+  { value: 1, label: 'Last month' },
+  { value: 3, label: 'Last 3 months' },
+  { value: 6, label: 'Last 6 months' },
+]
 
 export default function ProfileTab() {
   const { state, dispatch } = useStore()
   const ui = useUI()
-  const fileRef = useRef<HTMLInputElement>(null)
-  const [confirmClear, setConfirmClear] = useState(false)
   const account = getAccount(session() ?? '')
   const { settings, workouts } = state
   const unit = settings.unit
 
-  const totalVolume = workouts.reduce((s, w) => s + workoutVolume(w), 0)
-  const totalSets = workouts.reduce(
-    (s, w) => s + w.exercises.reduce((a, e) => a + e.sets.filter((x) => x.done).length, 0),
-    0
-  )
-  const streak = workoutStreak(workouts)
+  const [metric, setMetric] = useState<Metric>('duration')
+  const [range, setRange] = useState<Range>(3)
+  const [rangeOpen, setRangeOpen] = useState(false)
+  const [nameOpen, setNameOpen] = useState(false)
+  const [nameDraft, setNameDraft] = useState(settings.name)
+  const [seg, setSeg] = useState<'you' | 'following'>('you')
+  const [menuWorkout, setMenuWorkout] = useState<string | null>(null)
+  const [confirmDel, setConfirmDel] = useState(false)
 
-  const weekly = useMemo(() => {
-    const weeks: { label: string; value: number }[] = []
+  const streak = workoutStreak(workouts)
+  const following = state.contacts.filter((c) => c.followed).length + state.followedHandles.length
+  const myPosts = state.posts.filter((p) => p.author.kind === 'me').length
+
+  // weekly buckets for the chart, per selected metric
+  const weeks = useMemo(() => {
+    const out: { label: string; value: number }[] = []
     const thisWeek = weekStart(Date.now())
-    for (let i = 9; i >= 0; i--) {
+    const n = range === 1 ? 5 : range === 3 ? 13 : 26
+    for (let i = n - 1; i >= 0; i--) {
       const start = thisWeek - i * 7 * 86400000
       const end = start + 7 * 86400000
-      const vol = workouts
-        .filter((w) => w.start >= start && w.start < end)
-        .reduce((s, w) => s + workoutVolume(w), 0)
-      const d = new Date(start)
-      const months = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
-      weeks.push({ label: vol > 0 ? `${months[d.getMonth()]}${Math.ceil(d.getDate() / 7)}` : '', value: Math.round(vol) })
+      const inWeek = workouts.filter((w) => w.start >= start && w.start < end)
+      const value =
+        metric === 'volume'
+          ? Math.round(inWeek.reduce((s, w) => s + workoutVolume(w), 0))
+          : metric === 'reps'
+            ? inWeek.reduce((s, w) => s + workoutSetCount(w), 0)
+            : Math.round(inWeek.reduce((s, w) => s + (w.end - w.start), 0) / 60000)
+      out.push({ label: '', value })
     }
-    return weeks
-  }, [workouts])
+    return out
+  }, [workouts, metric, range])
 
-  const importFile = (f: File) => {
-    const reader = new FileReader()
-    reader.onload = () => {
-      try {
-        const parsed = JSON.parse(String(reader.result)) as AppState
-        if (!parsed || !Array.isArray(parsed.workouts)) throw new Error('bad shape')
-        dispatch({ t: 'importData', state: parsed })
-        ui.toast('Data imported')
-      } catch {
-        ui.toast('Could not read that file')
-      }
+  const hasData = weeks.some((w) => w.value > 0)
+  const metricFormat =
+    metric === 'volume'
+      ? (v: number) => fmtVolume(v, unit)
+      : metric === 'reps'
+        ? (v: number) => `${v} reps`
+        : (v: number) => `${v}m`
+
+  const shareProfile = () => {
+    const link = `${location.origin}${location.pathname}#/app`
+    const done = () => ui.toast('App link copied')
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(link).then(done, () => ui.toast(link))
+    } else {
+      ui.toast(link)
     }
-    reader.readAsText(f)
   }
+
+  const sorted = [...workouts].sort((a, b) => b.start - a.start)
+  const menuW = workouts.find((w) => w.id === menuWorkout)
 
   return (
     <div className="tab-screen">
-      <header className="page-head">
-        <h1>Profile</h1>
-        <a className="btn btn-ghost btn-sm" href="#/">
-          <Icon name="external" size={14} /> Website
-        </a>
+      <header className="page-head hv-topbar">
+        <h1 className="hv-username">{account?.handle ?? settings.name}</h1>
+        <div className="head-actions">
+          <button className="icon-btn" aria-label="Edit profile" onClick={() => setNameOpen(true)}>
+            <Icon name="edit" size={20} />
+          </button>
+          <button className="icon-btn" aria-label="Share app" onClick={shareProfile}>
+            <Icon name="share" size={20} />
+          </button>
+          <button className="icon-btn" aria-label="Settings" onClick={() => ui.push({ k: 'settings' })}>
+            <Icon name="gear" size={20} />
+          </button>
+        </div>
       </header>
 
-      <div className="card profile-card">
-        <Avatar name={settings.name} size={56} />
-        <div className="profile-info">
-          <h2>{settings.name}</h2>
-          <span className="muted">
-            {workouts.length} workout{workouts.length === 1 ? '' : 's'} logged
-          </span>
-        </div>
-      </div>
-
-      <div className="card account-card">
-        <div className="account-who">
-          <Icon name="user" size={18} />
-          <div>
-            <strong>@{account?.handle ?? 'athlete'}</strong>
-            <span>
-              {account?.kind === 'guest' ? 'Guest account' : 'Local account'} · free forever · no
-              ads
-            </span>
-          </div>
-        </div>
-        <div className="account-actions">
-          <button className="btn btn-ghost btn-sm" onClick={ui.switchAccount}>
-            <Icon name="repeat" size={14} /> Switch
-          </button>
-          <button className="btn btn-ghost btn-sm" onClick={ui.logout}>
-            <Icon name="arrowRight" size={14} /> Log out
-          </button>
-        </div>
-      </div>
-
-      <div className="stat-row stat-row-4">
-        <div className="card stat-card">
-          <strong>{workouts.length}</strong>
-          <span>workouts</span>
-        </div>
-        <div className="card stat-card">
-          <strong>{fmtVolume(totalVolume, unit)}</strong>
-          <span>volume</span>
-        </div>
-        <div className="card stat-card">
-          <strong>{totalSets}</strong>
-          <span>sets</span>
-        </div>
-        <div className="card stat-card streak-card">
-          <Icon name="flame" size={18} className="flame" />
-          <div>
-            <strong>{streak}</strong>
-            <span>streak</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="card chart-card">
-        <h3 className="card-title">Weekly volume ({unit})</h3>
-        <BarChart data={weekly} format={(v) => fmtVolume(v, unit)} />
-      </div>
-
-      <section className="section">
-        <h3 className="section-title">Settings</h3>
-        <div className="card settings-card">
-          <label className="setting-row">
-            <span>
-              <Icon name="user" size={16} /> Name
-            </span>
-            <input
-              className="setting-input"
-              value={settings.name}
-              onChange={(e) => dispatch({ t: 'settings', patch: { name: e.target.value } })}
-            />
-          </label>
-          <div className="setting-row">
-            <span>
-              <Icon name="dumbbell" size={16} /> Units
-            </span>
-            <Segmented
-              options={[
-                { value: 'kg', label: 'kg' },
-                { value: 'lb', label: 'lb' },
-              ]}
-              value={settings.unit}
-              onChange={(unit) => dispatch({ t: 'settings', patch: { unit } })}
-            />
-          </div>
-          <div className="setting-row">
-            <span>
-              <Icon name={settings.theme === 'dark' ? 'moon' : 'sun'} size={16} /> Theme
-            </span>
-            <Segmented
-              options={[
-                { value: 'dark', label: 'Dark' },
-                { value: 'light', label: 'Light' },
-              ]}
-              value={settings.theme}
-              onChange={(theme) => dispatch({ t: 'settings', patch: { theme } })}
-            />
-          </div>
-          <div className="setting-row">
-            <span>
-              <Icon name="timer" size={16} /> Rest timer
-            </span>
-            <div className="stepper">
-              <button onClick={() => dispatch({ t: 'settings', patch: { defaultRest: Math.max(15, settings.defaultRest - 15) } })}>
-                −
-              </button>
-              <span>{settings.defaultRest}s</span>
-              <button onClick={() => dispatch({ t: 'settings', patch: { defaultRest: Math.min(300, settings.defaultRest + 15) } })}>
-                +
-              </button>
+      <div className="hv-identity">
+        <Avatar name={settings.name} color={account?.color} size={80} />
+        <div className="hv-id-main">
+          <strong className="hv-id-name">{settings.name}</strong>
+          <div className="hv-counters">
+            <button className="hv-counter" onClick={() => setSeg('you')}>
+              <strong>{workouts.length}</strong>
+              <span>Workouts</span>
+            </button>
+            <button className="hv-counter" onClick={() => setSeg('following')}>
+              <strong>{following}</strong>
+              <span>Following</span>
+            </button>
+            <div className="hv-counter">
+              <strong>{myPosts}</strong>
+              <span>Posts</span>
             </div>
           </div>
-          <div className="setting-row">
-            <span>
-              <Icon name="zap" size={16} /> Auto-start rest
-            </span>
-            <Toggle
-              on={settings.restAutoStart}
-              onChange={(restAutoStart) => dispatch({ t: 'settings', patch: { restAutoStart } })}
-            />
-          </div>
-          <div className="setting-row">
-            <span>
-              <Icon name="target" size={16} /> Sounds
-            </span>
-            <Toggle
-              on={settings.sound}
-              onChange={(sound) => dispatch({ t: 'settings', patch: { sound } })}
-            />
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <h3 className="section-title">Data</h3>
-        <div className="card settings-card">
-          <button
-            className="setting-row setting-btn"
-            onClick={() => downloadJSON('reafit-backup.json', state)}
-          >
-            <span>
-              <Icon name="download" size={16} /> Export data
-            </span>
-            <Icon name="chevronRight" size={14} className="muted" />
-          </button>
-          <button className="setting-row setting-btn" onClick={() => fileRef.current?.click()}>
-            <span>
-              <Icon name="upload" size={16} /> Import backup
-            </span>
-            <Icon name="chevronRight" size={14} className="muted" />
-          </button>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="application/json"
-            hidden
-            onChange={(e) => {
-              const f = e.target.files?.[0]
-              if (f) importFile(f)
-              e.target.value = ''
-            }}
-          />
-          <button className="setting-row setting-btn danger" onClick={() => setConfirmClear(true)}>
-            <span>
-              <Icon name="trash" size={16} /> Clear all data
-            </span>
-          </button>
-        </div>
-      </section>
-
-      <div className="card about-card">
-        <div className="about-logo">RF</div>
-        <div>
-          <strong>REA Fit</strong>
-          <p className="muted small">
-            v1.1 · An open-source, Hevy-inspired workout tracker. Your data never leaves this
-            device. Exercise data from{' '}
-            <a href="https://github.com/hasaneyldrm/exercises-dataset" target="_blank" rel="noreferrer">
-              exercises-dataset
-            </a>{' '}
-            (MIT) · Exercise media © Gym visual.
-          </p>
         </div>
       </div>
 
-      {confirmClear && (
+      <div className="hv-chart-block">
+        <button className="hv-range-btn" onClick={() => setRangeOpen(true)}>
+          {RANGES.find((r) => r.value === range)?.label} <Icon name="chevronDown" size={16} />
+        </button>
+        <div className="hv-chart-card">
+          {hasData ? (
+            <BarChart data={weeks} height={150} format={metricFormat} />
+          ) : (
+            <div className="hv-chart-empty">
+              <Icon name="bars" size={42} />
+              <p>No data in time period</p>
+            </div>
+          )}
+        </div>
+        <div className="hv-metric-pills">
+          <button
+            className={`hv-metric ${metric === 'duration' ? 'hv-metric-on' : ''}`}
+            onClick={() => setMetric('duration')}
+          >
+            Duration
+          </button>
+          <button
+            className={`hv-metric ${metric === 'volume' ? 'hv-metric-on' : ''}`}
+            onClick={() => setMetric('volume')}
+          >
+            Volume
+          </button>
+          <button
+            className={`hv-metric ${metric === 'reps' ? 'hv-metric-on' : ''}`}
+            onClick={() => setMetric('reps')}
+          >
+            Reps
+          </button>
+        </div>
+      </div>
+
+      <p className="hv-section-label">Dashboard</p>
+      <div className="hv-dash-grid">
+        <button className="hv-tile" onClick={() => ui.push({ k: 'bodyDist' })}>
+          <Icon name="trend" size={20} /> Statistics
+        </button>
+        <button className="hv-tile" onClick={() => ui.push({ k: 'exercises' })}>
+          <Icon name="dumbbell" size={20} /> Exercises
+        </button>
+        <button className="hv-tile" onClick={() => ui.push({ k: 'measurements' })}>
+          <Icon name="ruler" size={20} /> Measures
+        </button>
+        <button className="hv-tile" onClick={() => ui.push({ k: 'calendar' })}>
+          <Icon name="calendar" size={20} /> Calendar
+        </button>
+      </div>
+
+      <div className="hv-workouts-head">
+        <p className="hv-section-label">Workouts</p>
+        <div className="hv-seg">
+          <Segmented
+            options={[
+              { value: 'you', label: 'You' },
+              { value: 'following', label: 'Following' },
+            ]}
+            value={seg}
+            onChange={setSeg}
+          />
+        </div>
+      </div>
+
+      {seg === 'you' ? (
+        <div className="hv-feed">
+          {sorted.length === 0 && (
+            <p className="hv-feed-empty">
+              Nothing here yet — your finished workouts will show up in this list.
+            </p>
+          )}
+          {sorted.map((w, i) => {
+            const nth = sorted.length - i
+            return (
+              <div className="hv-feed-item" key={w.id}>
+                <Avatar name={settings.name} color={account?.color} size={44} />
+                <button className="hv-feed-main" onClick={() => ui.push({ k: 'workout', id: w.id })}>
+                  <strong>{settings.name}</strong>
+                  <span className="hv-feed-badge">
+                    <Icon name="dumbbell" size={11} /> {nth} workout
+                  </span>
+                  <span className="hv-feed-date">
+                    {timeAgo(w.start)} · {fmtVolume(workoutVolume(w), unit)} {unit} ·{' '}
+                    {w.exercises.length} exercise{w.exercises.length === 1 ? '' : 's'}
+                  </span>
+                </button>
+                <button
+                  className="icon-btn"
+                  aria-label="Options"
+                  onClick={() => setMenuWorkout(w.id)}
+                >
+                  <Icon name="dots" size={20} />
+                </button>
+              </div>
+            )
+          })}
+          <p className="hv-streak-note">
+            <Icon name="flame" size={14} className="flame" /> {streak}-day streak · keep it going
+          </p>
+        </div>
+      ) : (
+        <div className="hv-feed">
+          <FeedPosts />
+        </div>
+      )}
+
+      {rangeOpen && (
+        <Sheet title="Time period" onClose={() => setRangeOpen(false)}>
+          <div className="sheet-actions">
+            {RANGES.map((r) => (
+              <button
+                key={r.value}
+                className={`btn btn-ghost btn-lg ${range === r.value ? 'btn-primary' : ''}`}
+                onClick={() => {
+                  setRange(r.value)
+                  setRangeOpen(false)
+                }}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
+        </Sheet>
+      )}
+
+      {nameOpen && (
+        <Sheet title="Edit profile" onClose={() => setNameOpen(false)}>
+          <input
+            className="sheet-input"
+            value={nameDraft}
+            onChange={(e) => setNameDraft(e.target.value)}
+            placeholder="Display name"
+            aria-label="Display name"
+          />
+          <button
+            className="btn btn-primary btn-lg"
+            onClick={() => {
+              const name = nameDraft.trim()
+              if (name) dispatch({ t: 'settings', patch: { name } })
+              setNameOpen(false)
+              ui.toast('Profile updated')
+            }}
+          >
+            Update
+          </button>
+        </Sheet>
+      )}
+
+      {menuWorkout && menuW && !confirmDel && (
+        <Sheet title={menuW.name} onClose={() => setMenuWorkout(null)}>
+          <div className="sheet-actions">
+            <button
+              className="btn btn-ghost btn-lg"
+              onClick={() => {
+                const id = menuW.id
+                setMenuWorkout(null)
+                ui.push({ k: 'workout', id })
+              }}
+            >
+              <Icon name="logbook" size={16} /> View workout
+            </button>
+            <button
+              className="btn btn-ghost btn-lg"
+              onClick={() => {
+                dispatch({ t: 'startAgain', workoutId: menuW.id })
+                setMenuWorkout(null)
+                ui.push({ k: 'logger' })
+              }}
+            >
+              <Icon name="repeat" size={16} /> Perform again
+            </button>
+            <button
+              className="btn btn-ghost btn-lg btn-danger-ghost"
+              onClick={() => setConfirmDel(true)}
+            >
+              <Icon name="trash" size={16} /> Delete workout
+            </button>
+          </div>
+        </Sheet>
+      )}
+
+      {confirmDel && menuW && (
         <Confirm
-          title="Clear all data?"
-          message="Workouts, routines, settings and custom exercises will be wiped from this device."
-          confirmLabel="Erase everything"
+          title="Delete workout?"
+          message="This workout and all of its sets will be removed from this device."
+          confirmLabel="Delete"
           danger
           onConfirm={() => {
-            dispatch({ t: 'clearAll' })
-            setConfirmClear(false)
-            ui.toast('All data cleared')
+            dispatch({ t: 'deleteWorkout', id: menuW.id })
+            setConfirmDel(false)
+            setMenuWorkout(null)
+            ui.toast('Workout deleted')
           }}
-          onCancel={() => setConfirmClear(false)}
+          onCancel={() => setConfirmDel(false)}
         />
       )}
     </div>

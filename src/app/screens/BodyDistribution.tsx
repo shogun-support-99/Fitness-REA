@@ -3,6 +3,7 @@ import { useStore } from '../../lib/store'
 import { useUI } from '../uiContext'
 import { Icon } from '../../components/icons'
 import { Segmented, Sheet } from '../../components/ui'
+import { RadarChart } from '../../components/charts'
 import { weekStart } from '../../lib/utils'
 import {
   LEVEL_LABELS,
@@ -44,6 +45,8 @@ export default function BodyDistribution() {
   const [mode, setMode] = useState<Mode>('week')
   const [selectedDay, setSelectedDay] = useState<number>(() => dayStart(Date.now()))
   const [helpOpen, setHelpOpen] = useState(false)
+  const [showTable, setShowTable] = useState(true)
+  const [showRadar, setShowRadar] = useState(false)
 
   const weekFrom = weekStart(Date.now()) + weekOffset * 7 * DAY_MS
   const weekTo = weekFrom + 7 * DAY_MS
@@ -69,6 +72,24 @@ export default function BodyDistribution() {
   )
   const total = totalSets(sets)
   const trained = MUSCLES.filter((m) => sets[m.id] > 0)
+
+  // previous period of the same length, for the radar comparison
+  const prevSets = useMemo(
+    () => muscleSets(workouts, from - (to - from), from, getExercise),
+    [workouts, from, to, getExercise]
+  )
+  const radarAxes = useMemo(() => {
+    const groups: [string, MuscleId[]][] = [
+      ['Chest', ['chest']],
+      ['Back', ['back', 'traps']],
+      ['Shoulders', ['shoulders']],
+      ['Arms', ['biceps', 'triceps', 'forearms']],
+      ['Legs', ['quads', 'hamstrings', 'glutes', 'calves']],
+      ['Core', ['core']],
+    ]
+    const sum = (s: MuscleSets, ids: MuscleId[]) => ids.reduce((a, id) => a + (s[id] ?? 0), 0)
+    return groups.map(([label, ids]) => ({ label, a: sum(sets, ids), b: sum(prevSets, ids) }))
+  }, [sets, prevSets])
 
   const shiftWeek = (dir: -1 | 1) => {
     setWeekOffset((w) => w + dir)
@@ -209,6 +230,18 @@ export default function BodyDistribution() {
           )}
         </div>
 
+        <div className="hv-adv-banner">Advanced statistics</div>
+
+        <button className="hv-adv-row" onClick={() => setShowTable((v) => !v)}>
+          <Icon name="bars" size={22} />
+          <span className="hv-adv-text">
+            <strong>Set count per muscle group</strong>
+            <span>Number of sets logged for each muscle group.</span>
+          </span>
+          <Icon name="chevronRight" size={16} className={`hv-adv-chev ${showTable ? 'hv-adv-chev-open' : ''}`} />
+        </button>
+
+        {showTable && (
         <div className="card bd-table">
           <div className="bd-row bd-row-total">
             <span>Total</span>
@@ -234,6 +267,22 @@ export default function BodyDistribution() {
             {mode === 'week' && ' The green dot marks muscles in the 10–20 sets/week hypertrophy zone.'}
           </p>
         </div>
+        )}
+
+        <button className="hv-adv-row" onClick={() => setShowRadar((v) => !v)}>
+          <Icon name="pentagon" size={22} />
+          <span className="hv-adv-text">
+            <strong>Muscle distribution (Chart)</strong>
+            <span>Compare your current and previous muscle distributions.</span>
+          </span>
+          <Icon name="chevronRight" size={16} className={`hv-adv-chev ${showRadar ? 'hv-adv-chev-open' : ''}`} />
+        </button>
+
+        {showRadar && (
+          <div className="card bd-table">
+            <RadarChart axes={radarAxes} labelA={mode === 'week' ? 'This week' : 'This day'} labelB="Previous" />
+          </div>
+        )}
       </div>
 
       {helpOpen && (

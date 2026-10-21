@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useReducer } from 'react'
-import type { AppState, Contact, Exercise, Post, Routine, Settings, Workout } from './types'
+import type { AppState, Contact, Exercise, Measurement, Post, Routine, Settings, Workout } from './types'
 import { EXERCISES } from '../data/exercises'
 import { DATASET_EXERCISES } from '../data/exercises-dataset'
 import { dataKey } from './auth'
@@ -21,7 +21,9 @@ export function freshState(name = 'Athlete'): AppState {
     active: null,
     workouts: [],
     routines: [],
+    folders: [],
     customs: [],
+    measurements: [],
     dataset: DATASET_EXERCISES,
     settings: { ...DEFAULT_SETTINGS, name },
     posts: samplePosts(),
@@ -39,6 +41,8 @@ function loadState(accountId: string): AppState {
       ...freshState(parsed.settings?.name),
       ...parsed,
       dataset: DATASET_EXERCISES,
+      folders: parsed.folders ?? [],
+      measurements: parsed.measurements ?? [],
       posts: parsed.posts ?? samplePosts(),
       contacts: parsed.contacts ?? [],
       followedHandles: parsed.followedHandles ?? ['mayalifts'],
@@ -58,6 +62,12 @@ export type Action =
   | { t: 'deleteWorkout'; id: string }
   | { t: 'saveRoutine'; routine: Routine }
   | { t: 'deleteRoutine'; id: string }
+  | { t: 'addFolder'; name: string }
+  | { t: 'renameFolder'; from: string; to: string }
+  | { t: 'deleteFolder'; name: string }
+  | { t: 'moveRoutine'; id: string; folder: string | null }
+  | { t: 'addMeasurement'; kg: number; at: number }
+  | { t: 'deleteMeasurement'; id: string }
   | { t: 'addCustomExercise'; exercise: Exercise }
   | { t: 'deleteCustomExercise'; id: string }
   | { t: 'settings'; patch: Partial<Settings> }
@@ -89,6 +99,7 @@ export function reducer(state: AppState, action: Action): AppState {
           ? routine.exercises.map((re) => ({
               exerciseId: re.exerciseId,
               notes: re.notes ?? '',
+              restSec: re.restSec,
               sets: re.sets.map((rs) => ({
                 type: rs.type,
                 weight: rs.weight,
@@ -120,6 +131,7 @@ export function reducer(state: AppState, action: Action): AppState {
         exercises: prev.exercises.map((e) => ({
           exerciseId: e.exerciseId,
           notes: e.notes ?? '',
+          restSec: e.restSec,
           sets: e.sets.map((s) => ({
             type: s.type,
             weight: s.weight,
@@ -154,6 +166,43 @@ export function reducer(state: AppState, action: Action): AppState {
     }
     case 'deleteRoutine':
       return { ...state, routines: state.routines.filter((r) => r.id !== action.id) }
+    case 'addFolder': {
+      const name = action.name.trim()
+      if (!name || state.folders.includes(name)) return state
+      return { ...state, folders: [...state.folders, name] }
+    }
+    case 'renameFolder': {
+      const to = action.to.trim()
+      if (!to || to === action.from) return state
+      if (state.folders.includes(to)) return state
+      return {
+        ...state,
+        folders: state.folders.map((f) => (f === action.from ? to : f)),
+        routines: state.routines.map((r) => (r.folder === action.from ? { ...r, folder: to } : r)),
+      }
+    }
+    case 'deleteFolder':
+      return {
+        ...state,
+        folders: state.folders.filter((f) => f !== action.name),
+        routines: state.routines.map((r) =>
+          r.folder === action.name ? { ...r, folder: undefined } : r
+        ),
+      }
+    case 'moveRoutine':
+      return {
+        ...state,
+        routines: state.routines.map((r) =>
+          r.id === action.id ? { ...r, folder: action.folder ?? undefined } : r
+        ),
+      }
+    case 'addMeasurement': {
+      if (!Number.isFinite(action.kg) || action.kg <= 0) return state
+      const m: Measurement = { id: uid(), at: action.at, kg: action.kg }
+      return { ...state, measurements: [...state.measurements, m] }
+    }
+    case 'deleteMeasurement':
+      return { ...state, measurements: state.measurements.filter((m) => m.id !== action.id) }
     case 'addCustomExercise':
       return { ...state, customs: [...state.customs, action.exercise] }
     case 'deleteCustomExercise':

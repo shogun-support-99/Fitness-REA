@@ -62,10 +62,30 @@ const seedState = {
         {
           exerciseId: 'barbell-bench-press',
           notes: '',
+          restSec: 90,
           sets: [{ type: 'normal', weight: 60, reps: 8, duration: 0, distance: 0 }],
         },
       ],
     },
+    {
+      id: 'r2',
+      name: 'Lower',
+      createdAt: now - 90000,
+      folder: 'Legs',
+      exercises: [
+        {
+          exerciseId: 'barbell-squat',
+          notes: '',
+          sets: [{ type: 'normal', weight: 80, reps: 5, duration: 0, distance: 0 }],
+        },
+      ],
+    },
+  ],
+  folders: ['Legs'],
+  measurements: [
+    { id: 'm1', at: now - 30 * 86400000, kg: 61.5 },
+    { id: 'm2', at: now - 20 * 86400000, kg: 62 },
+    { id: 'm3', at: now - 5 * 86400000, kg: 61.7 },
   ],
   customs: [],
   dataset: [
@@ -136,6 +156,9 @@ import ExerciseDetail from '../src/app/screens/ExerciseDetail'
 import WorkoutDetail from '../src/app/screens/WorkoutDetail'
 import RoutineDetail from '../src/app/screens/RoutineDetail'
 import RoutineEditor from '../src/app/screens/RoutineEditor'
+import Settings from '../src/app/screens/Settings'
+import Measurements from '../src/app/screens/Measurements'
+import CalendarScreen from '../src/app/screens/CalendarScreen'
 import Landing from '../src/landing/Landing'
 
 const fakeUI: UIApi = {
@@ -206,5 +229,10 @@ render('WorkoutDetail', wrap(<WorkoutDetail id="w1" />))
 render('RoutineDetail', wrap(<RoutineDetail id="r1" />))
 render('RoutineEditorEdit', wrap(<RoutineEditor id="r1" />))
 render('RoutineEditorNew', wrap(<RoutineEditor />))
+render('Settings', wrap(<Settings />))
+render('Measurements', wrap(<Measurements />))
+render('Calendar', wrap(<CalendarScreen />))
+render('ExercisesTabEmbedded', wrap(<ExercisesTab embedded />))
+render('FeedTabEmbedded', wrap(<FeedTab embedded />))
 
 console.log('\nALL SCREENS RENDERED OK')

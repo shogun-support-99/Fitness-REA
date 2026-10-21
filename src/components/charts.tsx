@@ -101,3 +101,75 @@ export function LineChart({
     </svg>
   )
 }
+
+/**
+ * Radar (spider) chart comparing two periods of muscle distribution.
+ * axes: [{ label, a, b }] — a = current period, b = previous.
+ */
+export function RadarChart({
+  axes,
+  height = 220,
+  labelA = 'Current',
+  labelB = 'Previous',
+}: {
+  axes: { label: string; a: number; b: number }[]
+  height?: number
+  labelA?: string
+  labelB?: string
+}) {
+  const W = 320
+  const H = height
+  const cx = W / 2
+  const cy = H / 2 + 4
+  const R = Math.min(W, H) / 2 - 34
+  const n = Math.max(3, axes.length)
+  const max = Math.max(1, ...axes.flatMap((d) => [d.a, d.b]))
+  const pt = (i: number, v: number) => {
+    const ang = (Math.PI * 2 * i) / n - Math.PI / 2
+    const r = (v / max) * R
+    return [cx + Math.cos(ang) * r, cy + Math.sin(ang) * r] as const
+  }
+  const poly = (key: 'a' | 'b') =>
+    axes.map((d, i) => pt(i, d[key]).join(',')).join(' ')
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="chart radar-chart" role="img" aria-label="Muscle distribution radar">
+      {[0.25, 0.5, 0.75, 1].map((f) => (
+        <polygon
+          key={f}
+          points={axes.map((_, i) => pt(i, max * f).join(',')).join(' ')}
+          fill="none"
+          stroke="var(--border)"
+          strokeWidth="1"
+        />
+      ))}
+      {axes.map((_, i) => {
+        const [px, py] = pt(i, max)
+        return <line key={i} x1={cx} y1={cy} x2={px} y2={py} stroke="var(--border)" strokeWidth="1" />
+      })}
+      <polygon points={poly('b')} fill="rgba(142,142,147,0.18)" stroke="var(--text2)" strokeWidth="1.5" strokeDasharray="4 3" />
+      <polygon points={poly('a')} fill="rgba(10,132,255,0.22)" stroke="var(--accent)" strokeWidth="2" />
+      {axes.map((d, i) => {
+        const ang = (Math.PI * 2 * i) / n - Math.PI / 2
+        const lx = cx + Math.cos(ang) * (R + 18)
+        const ly = cy + Math.sin(ang) * (R + 18)
+        return (
+          <text
+            key={d.label}
+            x={lx}
+            y={ly + 3}
+            textAnchor={Math.abs(Math.cos(ang)) < 0.3 ? 'middle' : Math.cos(ang) > 0 ? 'start' : 'end'}
+            className="chart-label"
+          >
+            {d.label}
+          </text>
+        )
+      })}
+      <g className="radar-legend">
+        <circle cx={cx - 52} cy={10} r="4" fill="var(--accent)" />
+        <text x={cx - 44} y={13} className="chart-label">{labelA}</text>
+        <circle cx={cx + 8} cy={10} r="4" fill="var(--text2)" />
+        <text x={cx + 16} y={13} className="chart-label">{labelB}</text>
+      </g>
+    </svg>
+  )
+}

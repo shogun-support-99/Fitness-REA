@@ -2,8 +2,13 @@ import { useState } from 'react'
 import { useStore } from '../../lib/store'
 import { useUI } from '../uiContext'
 import { Icon } from '../../components/icons'
-import type { Routine, RoutineSet, Workout } from '../../lib/types'
-import { fmtNum, toDisplayVal, toKg, uid } from '../../lib/utils'
+import { ExerciseThumb } from '../../components/media'
+import { Sheet } from '../../components/ui'
+import type { Routine, RoutineSet } from '../../lib/types'
+import { fmtNum, fmtRest, toDisplayVal, toKg, uid } from '../../lib/utils'
+import { imgUrl } from '../../data/exercises'
+
+const REST_OPTIONS = [0, 30, 45, 60, 90, 120, 180]
 
 function NumCell({
   value,
@@ -18,7 +23,7 @@ function NumCell({
   const shown = draft ?? (value > 0 ? fmtNum(value) : '')
   return (
     <input
-      className="cell-input"
+      className="re-input"
       type="text"
       inputMode="decimal"
       value={shown}
@@ -48,6 +53,10 @@ export default function RoutineEditor({ id }: { id?: string }) {
       ? (JSON.parse(JSON.stringify(existing.exercises)) as Routine['exercises'])
       : []
   )
+  const [menuEx, setMenuEx] = useState<number | null>(null)
+  const [restEx, setRestEx] = useState<number | null>(null)
+  const [noteEx, setNoteEx] = useState<number | null>(null)
+  const [noteDraft, setNoteDraft] = useState('')
 
   const patch = (fn: (list: Routine['exercises']) => void) => {
     const list: Routine['exercises'] = JSON.parse(JSON.stringify(exercises))
@@ -77,6 +86,7 @@ export default function RoutineEditor({ id }: { id?: string }) {
         id: existing?.id ?? uid(),
         name: name.trim() || 'Routine',
         createdAt: existing?.createdAt ?? Date.now(),
+        folder: existing?.folder,
         exercises,
       },
     })
@@ -92,48 +102,85 @@ export default function RoutineEditor({ id }: { id?: string }) {
     })
 
   return (
-    <div className="subscreen">
-      <header className="sub-head">
-        <button className="icon-btn" onClick={() => ui.pop()} aria-label="Cancel">
-          <Icon name="x" size={20} />
+    <div className="subscreen routine-editor">
+      <header className="re-topbar">
+        <button className="re-cancel" onClick={() => ui.pop()}>
+          Cancel
         </button>
         <h2>{existing ? 'Edit Routine' : 'New Routine'}</h2>
-        <button className="btn btn-primary btn-sm" onClick={save}>
-          Save
+        <button className="re-update" onClick={save}>
+          Update
         </button>
       </header>
 
       <div className="re-body">
-        <input
-          className="re-name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Routine name"
-          aria-label="Routine name"
-        />
+        <div className="re-title-row">
+          <input
+            className="re-name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Routine name"
+            aria-label="Routine name"
+          />
+          {name.length > 0 && (
+            <button
+              className="re-clear"
+              aria-label="Clear name"
+              onClick={() => setName('')}
+            >
+              <Icon name="x" size={13} />
+            </button>
+          )}
+        </div>
 
         {exercises.map((ex, ei) => {
           const meta = getExercise(ex.exerciseId)
           const isCardio = meta?.category === 'cardio'
+          const rest = ex.restSec ?? state.settings.defaultRest
           return (
-            <div className="card ex-card" key={ei}>
-              <div className="ex-head">
-                <div className="ex-title">
-                  <h3>{meta?.name ?? 'Exercise'}</h3>
-                  <span className="ex-sub">{meta?.equipment}</span>
-                </div>
-                <div className="ex-actions">
-                  <button
-                    className="icon-btn icon-danger"
-                    onClick={() => patch((l) => l.splice(ei, 1))}
-                    aria-label="Remove exercise"
-                  >
-                    <Icon name="trash" size={16} />
-                  </button>
-                </div>
+            <div className="re-ex" key={ei}>
+              <div className="re-ex-head">
+                {meta?.media ? (
+                  <img className="re-ex-thumb" src={imgUrl(meta.media)} alt="" loading="lazy" />
+                ) : (
+                  <span className="re-ex-thumb re-ex-thumb-fallback">
+                    <ExerciseThumb media={meta?.media} size={20} />
+                  </span>
+                )}
+                <button
+                  className="re-ex-name"
+                  onClick={() => ui.push({ k: 'exercise', id: ex.exerciseId })}
+                >
+                  {meta?.name ?? 'Exercise'}
+                </button>
+                <button
+                  className="icon-btn"
+                  aria-label="Exercise options"
+                  onClick={() => setMenuEx(ei)}
+                >
+                  <Icon name="dotsV" size={20} />
+                </button>
               </div>
-              <div className="set-grid set-grid-edit">
-                <div className="set-row set-row-head">
+
+              <div className="re-pills">
+                <button className="re-pill" onClick={() => setRestEx(ei)}>
+                  <Icon name="timer" size={15} />
+                  {rest === 0 ? 'Rest: OFF' : `Rest: ${fmtRest(rest)}`}
+                </button>
+                <button
+                  className="re-pill"
+                  onClick={() => {
+                    setNoteEx(ei)
+                    setNoteDraft(ex.notes ?? '')
+                  }}
+                >
+                  <Icon name="note" size={15} />
+                  {ex.notes ? 'Note ✓' : 'Note'}
+                </button>
+              </div>
+
+              <div className="re-grid">
+                <div className="re-row re-row-head">
                   <span>SET</span>
                   {isCardio ? (
                     <>
@@ -150,13 +197,19 @@ export default function RoutineEditor({ id }: { id?: string }) {
                 </div>
                 {ex.sets.map((s, si) => {
                   const letter =
-                    s.type !== 'normal' ? (s.type === 'warmup' ? 'W' : s.type === 'drop' ? 'D' : 'F') : ''
+                    s.type !== 'normal'
+                      ? s.type === 'warmup'
+                        ? 'W'
+                        : s.type === 'drop'
+                          ? 'D'
+                          : 'F'
+                      : ''
                   return (
-                    <div className="set-row" key={si}>
+                    <div className="re-row" key={si}>
                       <button
-                        className={`set-type ${letter ? `set-type-${s.type}` : ''}`}
+                        className={`re-set-badge ${letter ? `set-type-${s.type}` : ''}`}
                         onClick={() => cycleType(ei, si)}
-                        title="Tap to change set type"
+                        title="Tap to change set type (W/D/F)"
                       >
                         {letter || si + 1}
                       </button>
@@ -184,18 +237,19 @@ export default function RoutineEditor({ id }: { id?: string }) {
                         </>
                       )}
                       <button
-                        className="icon-btn icon-danger"
-                        onClick={() => patch((l) => l[ei].sets.splice(si, 1))}
+                        className="re-row-del"
                         aria-label="Remove set"
+                        onClick={() => patch((l) => l[ei].sets.splice(si, 1))}
                       >
-                        <Icon name="trash" size={15} />
+                        <Icon name="x" size={14} />
                       </button>
                     </div>
                   )
                 })}
               </div>
+
               <button
-                className="add-set-btn"
+                className="re-add-set"
                 onClick={() =>
                   patch((l) => {
                     const last = l[ei].sets[l[ei].sets.length - 1]
@@ -209,19 +263,97 @@ export default function RoutineEditor({ id }: { id?: string }) {
                   })
                 }
               >
-                <Icon name="plus" size={14} /> Add Set
+                <Icon name="plus" size={15} /> Add Set
               </button>
             </div>
           )
         })}
 
         <button
-          className="btn btn-ghost btn-lg add-ex-btn"
+          className="re-add-ex"
           onClick={() => ui.push({ k: 'picker', onPick: addExercises })}
         >
           <Icon name="plus" size={18} /> Add Exercise
         </button>
       </div>
+
+      {menuEx !== null && exercises[menuEx] && (
+        <Sheet title={getExercise(exercises[menuEx].exerciseId)?.name ?? 'Exercise'} onClose={() => setMenuEx(null)}>
+          <div className="sheet-actions">
+            <button
+              className="btn btn-ghost btn-lg"
+              onClick={() => {
+                const target = menuEx
+                setMenuEx(null)
+                ui.push({ k: 'exercise', id: exercises[target].exerciseId })
+              }}
+            >
+              <Icon name="info" size={16} /> View exercise
+            </button>
+            <button
+              className="btn btn-ghost btn-lg btn-danger-ghost"
+              onClick={() => {
+                patch((l) => l.splice(menuEx, 1))
+                setMenuEx(null)
+              }}
+            >
+              <Icon name="trash" size={16} /> Remove exercise
+            </button>
+          </div>
+        </Sheet>
+      )}
+
+      {restEx !== null && exercises[restEx] && (
+        <Sheet title="Rest timer" onClose={() => setRestEx(null)}>
+          <div className="sheet-actions">
+            {REST_OPTIONS.map((sec) => (
+              <button
+                key={sec}
+                className={`btn btn-ghost btn-lg ${
+                  (exercises[restEx].restSec ?? state.settings.defaultRest) === sec ? 'btn-primary' : ''
+                }`}
+                onClick={() => {
+                  patch((l) => (l[restEx].restSec = sec))
+                  setRestEx(null)
+                }}
+              >
+                <Icon name="timer" size={16} />
+                {sec === 0 ? 'OFF' : fmtRest(sec)}
+              </button>
+            ))}
+            <button
+              className="btn btn-ghost btn-lg"
+              onClick={() => {
+                patch((l) => (l[restEx].restSec = state.settings.defaultRest))
+                setRestEx(null)
+              }}
+            >
+              <Icon name="zap" size={16} /> Default ({fmtRest(state.settings.defaultRest)})
+            </button>
+          </div>
+        </Sheet>
+      )}
+
+      {noteEx !== null && exercises[noteEx] && (
+        <Sheet title="Exercise note" onClose={() => setNoteEx(null)}>
+          <textarea
+            className="sheet-textarea"
+            value={noteDraft}
+            onChange={(e) => setNoteDraft(e.target.value)}
+            placeholder="Cues, setup, reminders…"
+            rows={4}
+          />
+          <button
+            className="btn btn-primary btn-lg"
+            onClick={() => {
+              patch((l) => (l[noteEx].notes = noteDraft.trim()))
+              setNoteEx(null)
+            }}
+          >
+            Save note
+          </button>
+        </Sheet>
+      )}
     </div>
   )
 }

@@ -58,6 +58,8 @@ export interface WorkoutExercise {
   exerciseId: string
   notes: string
   sets: LoggedSet[]
+  /** per-exercise rest override in seconds, copied from the routine */
+  restSec?: number
 }
 
 export interface Workout {
@@ -84,6 +86,8 @@ export interface RoutineExercise {
   exerciseId: string
   notes: string
   sets: RoutineSet[]
+  /** per-exercise rest override in seconds (Hevy-style); undefined = default */
+  restSec?: number
 }
 
 export interface Routine {
@@ -91,6 +95,15 @@ export interface Routine {
   name: string
   createdAt: number
   exercises: RoutineExercise[]
+  /** routine folder name; unset = "My Routines" */
+  folder?: string
+}
+
+/** A body measurement entry (weight log). Always stored in kilograms. */
+export interface Measurement {
+  id: string
+  at: number
+  kg: number
 }
 
 export interface Settings {
@@ -176,7 +189,11 @@ export interface AppState {
   active: Workout | null
   workouts: Workout[]
   routines: Routine[]
+  /** user-created routine folder names ("My Routines" is implicit) */
+  folders: string[]
   customs: Exercise[]
+  /** body measurement log (weight etc.) */
+  measurements: Measurement[]
   /** the full bundled exercise library */
   dataset: Exercise[]
   settings: Settings
