@@ -205,6 +205,36 @@ export function workoutStreak(workouts: Workout[]): number {
   return streak
 }
 
+/** Consecutive weeks (ending this week) with at least one workout — Hevy's calendar streak. */
+export function weekStreak(workouts: Workout[]): number {
+  const weeks = new Set(workouts.map((w) => weekStart(w.start)))
+  if (weeks.size === 0) return 0
+  let streak = 0
+  let ws = weekStart(Date.now())
+  while (weeks.has(ws)) {
+    streak++
+    ws -= 7 * 86400000
+  }
+  return streak
+}
+
+/** Calendar days without a workout, counted from the first logged workout. */
+export function restDays(workouts: Workout[]): number {
+  if (workouts.length === 0) return 0
+  const first = Math.min(...workouts.map((w) => dayStart(w.start)))
+  const today = dayStart(Date.now())
+  const totalDays = Math.round((today - first) / 86400000) + 1
+  const workoutDays = new Set(workouts.map((w) => dayKey(w.start))).size
+  return Math.max(0, totalDays - workoutDays)
+}
+
+/** "1min 30s" / "45s" / "2min 0s" — Hevy's rest pill format. */
+export function fmtRest(sec: number): string {
+  const m = Math.floor(sec / 60)
+  const s = sec % 60
+  return m > 0 ? `${m}min ${s}s` : `${s}s`
+}
+
 export function lastPerformance(
   workouts: Workout[],
   exerciseId: string,

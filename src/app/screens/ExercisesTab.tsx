@@ -8,7 +8,7 @@ import type { Equipment, MuscleGroup } from '../../lib/types'
 
 const PAGE = 60
 
-export default function ExercisesTab() {
+export default function ExercisesTab({ embedded = false }: { embedded?: boolean }) {
   const { allExercises } = useStore()
   const ui = useUI()
   const [q, setQ] = useState('')
@@ -43,6 +43,11 @@ export default function ExercisesTab() {
   return (
     <div className="tab-screen">
       <header className="page-head">
+        {embedded ? (
+          <button className="icon-btn" onClick={() => ui.pop()} aria-label="Back">
+            <Icon name="chevronLeft" size={22} />
+          </button>
+        ) : null}
         <h1>
           Exercises <span className="head-count">{allExercises.length.toLocaleString()}</span>
         </h1>

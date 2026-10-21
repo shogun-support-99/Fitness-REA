@@ -46,6 +46,17 @@ import {
   Watch,
   X,
   Zap,
+  Ruler,
+  FolderPlus,
+  MoreVertical,
+  ClipboardList,
+  BarChart3,
+  Share2,
+  Settings,
+  TrendingUp,
+  UserCheck,
+  Pentagon,
+  RefreshCw,
 } from 'lucide-react'
 
 export type IconName =
@@ -95,6 +106,17 @@ export type IconName =
   | 'logbook'
   | 'pause'
   | 'skipFwd'
+  | 'ruler'
+  | 'folderPlus'
+  | 'dotsV'
+  | 'clipboard'
+  | 'bars'
+  | 'share'
+  | 'gear'
+  | 'trend'
+  | 'userCheck'
+  | 'pentagon'
+  | 'refresh'
 
 /** One consistent drawn icon system (Lucide) behind the app's own name API. */
 const LUCIDE: Record<IconName, LucideIcon> = {
@@ -144,6 +166,17 @@ const LUCIDE: Record<IconName, LucideIcon> = {
   logbook: BookOpenText,
   pause: Pause,
   skipFwd: SkipForward,
+  ruler: Ruler,
+  folderPlus: FolderPlus,
+  dotsV: MoreVertical,
+  clipboard: ClipboardList,
+  bars: BarChart3,
+  share: Share2,
+  gear: Settings,
+  trend: TrendingUp,
+  userCheck: UserCheck,
+  pentagon: Pentagon,
+  refresh: RefreshCw,
 }
 
 export function Icon({

@@ -180,7 +180,7 @@ export default function Home() {
       </section>
 
       <section className="section">
-        <button className="card row-item" onClick={() => ui.resetTo('exercises')}>
+        <button className="card row-item" onClick={() => ui.push({ k: 'exercises' })}>
           <div className="row-icon">
             <Icon name="book" size={20} />
           </div>

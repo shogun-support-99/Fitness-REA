@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useStore } from '../lib/store'
 import { beep, fmtClock, fmtElapsed } from '../lib/utils'
-import { Icon, Logo, type IconName } from '../components/icons'
+import { Icon, type IconName } from '../components/icons'
 import { Confirm } from '../components/ui'
 import { UICtx, type Screen, type Tab } from './uiContext'
 import Home from './screens/Home'
@@ -19,12 +19,14 @@ import RoutineEditor from './screens/RoutineEditor'
 import HistoryScreen from './screens/History'
 import Contacts from './screens/Contacts'
 import BodyDistribution from './screens/BodyDistribution'
+import Settings from './screens/Settings'
+import Measurements from './screens/Measurements'
+import CalendarScreen from './screens/CalendarScreen'
 
+/** Hevy-style 3-tab bottom navigation. */
 const TABS: { id: Tab; label: string; icon: IconName }[] = [
   { id: 'home', label: 'Home', icon: 'home' },
-  { id: 'routines', label: 'Routines', icon: 'layers' },
-  { id: 'exercises', label: 'Exercises', icon: 'book' },
-  { id: 'feed', label: 'Feed', icon: 'users' },
+  { id: 'workout', label: 'Workout', icon: 'dumbbell' },
   { id: 'profile', label: 'Profile', icon: 'user' },
 ]
 
@@ -56,6 +58,16 @@ function ScreenLayer({ screen }: { screen: Screen }) {
       return <Contacts />
     case 'bodyDist':
       return <BodyDistribution />
+    case 'settings':
+      return <Settings />
+    case 'measurements':
+      return <Measurements />
+    case 'calendar':
+      return <CalendarScreen />
+    case 'exercises':
+      return <ExercisesTab embedded />
+    case 'feed':
+      return <FeedTab embedded />
   }
 }
 
@@ -225,9 +237,7 @@ export default function AppShell({ onSignOut }: { onSignOut: () => void }) {
             {!top && (
               <main className="screen" key={tab}>
                 {tab === 'home' && <Home />}
-                {tab === 'routines' && <RoutinesTab />}
-                {tab === 'exercises' && <ExercisesTab />}
-                {tab === 'feed' && <FeedTab />}
+                {tab === 'workout' && <RoutinesTab />}
                 {tab === 'profile' && <ProfileTab />}
               </main>
             )}
@@ -244,23 +254,20 @@ export default function AppShell({ onSignOut }: { onSignOut: () => void }) {
             />
           )}
           {!top && (
-            <nav className="tabbar">
-              <div className="tabbar-brand">
-                <Logo size={26} />
-                <span>
-                  REA<b>FIT</b>
-                </span>
-              </div>
+            <nav className="tabbar" aria-label="Main navigation">
               {TABS.map((t) => (
                 <button
                   key={t.id}
                   className={`tab ${tab === t.id ? 'tab-on' : ''}`}
                   onClick={() => setTab(t.id)}
                 >
-                  <Icon name={t.icon} size={22} />
-                  <span>{t.label}</span>
+                  <span className="tab-pill">
+                    <Icon name={t.icon} size={22} />
+                  </span>
+                  <span className="tab-label">{t.label}</span>
                 </button>
               ))}
+              <div className="tabbar-homebar" aria-hidden="true" />
             </nav>
           )}
           {rest && <RestBanner rest={rest} adjust={api.adjustRest} stop={api.stopRest} />}

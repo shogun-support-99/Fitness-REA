@@ -170,7 +170,8 @@ export default function Logger() {
     // drop sets flow straight into the next set — no rest countdown
     const nextIsDrop = ex.sets[si + 1]?.type === 'drop'
     if (nowDone && state.settings.restAutoStart && !nextIsDrop) {
-      ui.startRest(state.settings.defaultRest)
+      // per-exercise rest override (set in the routine editor) beats the default
+      ui.startRest(ex.restSec ?? state.settings.defaultRest)
     }
     // live PR: celebrate the moment the set is logged, not at the end
     if (nowDone && effective.weight > 0 && effective.reps > 0 && effective.type !== 'warmup') {
