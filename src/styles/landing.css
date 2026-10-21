@@ -4,9 +4,9 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --lbg: #ffffff;
   --lbg2: #f6f7fb;
-  --ltext: #0b0c0f;
+  --ltext: #000000;
   --lmut: #5a6472;
-  --laccent: #2f6bff;
+  --laccent: #0a84ff;
   background: var(--lbg);
   color: var(--ltext);
   min-height: 100vh;
@@ -195,7 +195,7 @@
   position: absolute;
   width: 480px;
   height: 480px;
-  background: radial-gradient(circle, rgba(47, 107, 255, 0.12), transparent 62%);
+  background: radial-gradient(circle, rgba(10, 132, 255, 0.12), transparent 62%);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -208,8 +208,8 @@
   width: min(310px, 78vw);
   aspect-ratio: 9 / 19.2;
   border-radius: 48px;
-  border: 9px solid #131419;
-  background: #0e0f13;
+  border: 9px solid #1c1c1e;
+  background: #000000;
   box-shadow:
     0 40px 90px rgba(11, 15, 40, 0.35),
     inset 0 0 0 2px rgba(255, 255, 255, 0.06);
@@ -222,7 +222,7 @@
   transform: translateX(-50%);
   width: 96px;
   height: 22px;
-  background: #131419;
+  background: #1c1c1e;
   border-radius: 999px;
   z-index: 5;
 }
@@ -232,7 +232,7 @@
   padding: 14px 14px 12px;
   display: flex;
   flex-direction: column;
-  color: #f3f4f6;
+  color: #ffffff;
   font-size: 11px;
 }
 .pm-status {
@@ -242,7 +242,7 @@
   font-weight: 700;
   padding: 0 8px;
   margin-bottom: 6px;
-  color: #a3a8b3;
+  color: #8e8e93;
 }
 .pm-head {
   display: flex;
@@ -253,7 +253,7 @@
 }
 .pm-hi {
   font-size: 10px;
-  color: #a3a8b3;
+  color: #8e8e93;
 }
 .pm-name {
   font-family: var(--font-display);
@@ -266,7 +266,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #2f6bff;
+  background: #0a84ff;
   color: #fff;
   display: flex;
   align-items: center;
@@ -277,8 +277,8 @@
 .pm-week {
   display: flex;
   justify-content: space-between;
-  background: #16171d;
-  border: 1px solid #262933;
+  background: #1c1c1e;
+  border: 1px solid #222225;
   border-radius: 13px;
   padding: 8px 12px;
   margin-bottom: 7px;
@@ -289,20 +289,20 @@
   align-items: center;
   gap: 4px;
   font-size: 8.5px;
-  color: #6d7280;
+  color: #8e8e93;
   font-weight: 700;
 }
 .pm-day i {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #262933;
+  background: #222225;
 }
 .pm-day i.on {
-  background: #2f6bff;
+  background: #0a84ff;
 }
 .pm-day i.today {
-  box-shadow: 0 0 0 2.5px rgba(47, 107, 255, 0.3);
+  box-shadow: 0 0 0 2.5px rgba(10, 132, 255, 0.3);
 }
 .pm-stats {
   display: grid;
@@ -311,8 +311,8 @@
   margin-bottom: 9px;
 }
 .pm-stats > div {
-  background: #16171d;
-  border: 1px solid #262933;
+  background: #1c1c1e;
+  border: 1px solid #222225;
   border-radius: 12px;
   padding: 8px 9px;
   display: flex;
@@ -380,7 +380,7 @@
 }
 .pm-stats span {
   font-size: 7.5px;
-  color: #6d7280;
+  color: #8e8e93;
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -389,13 +389,13 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  background: #2f6bff;
+  background: #0a84ff;
   color: #fff;
   border-radius: 13px;
   padding: 11px;
   font-weight: 800;
   font-size: 11.5px;
-  box-shadow: 0 8px 20px rgba(47, 107, 255, 0.4);
+  box-shadow: 0 8px 20px rgba(10, 132, 255, 0.4);
   margin-bottom: 9px;
 }
 .pm-quick {
@@ -408,17 +408,17 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  background: #16171d;
-  border: 1px solid #262933;
+  background: #1c1c1e;
+  border: 1px solid #222225;
   border-radius: 10px;
   padding: 7px 10px;
   font-size: 9.5px;
   font-weight: 700;
-  color: #a3a8b3;
+  color: #8e8e93;
   white-space: nowrap;
 }
 .pm-routine svg {
-  color: #7ba4ff;
+  color: #4da2ff;
 }
 .pm-recent {
   flex: 1;
@@ -429,15 +429,15 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #6d7280;
+  color: #8e8e93;
   margin-bottom: 6px;
 }
 .pm-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #16171d;
-  border: 1px solid #262933;
+  background: #1c1c1e;
+  border: 1px solid #222225;
   border-radius: 12px;
   padding: 8px 10px;
   margin-bottom: 6px;
@@ -446,8 +446,8 @@
   width: 24px;
   height: 24px;
   border-radius: 8px;
-  background: #1d1f27;
-  color: #a3a8b3;
+  background: #2c2c2e;
+  color: #8e8e93;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -458,18 +458,18 @@
 }
 .pm-row span {
   font-size: 8.5px;
-  color: #6d7280;
+  color: #8e8e93;
 }
 .pm-vol {
   margin-left: auto;
-  color: #7ba4ff;
+  color: #4da2ff;
   font-weight: 800;
   font-size: 10.5px;
 }
 .pm-tabbar {
   display: flex;
   justify-content: space-around;
-  border-top: 1px solid #262933;
+  border-top: 1px solid #222225;
   padding-top: 8px;
   margin-top: 4px;
 }
@@ -480,10 +480,10 @@
   gap: 3px;
   font-size: 7.5px;
   font-weight: 700;
-  color: #6d7280;
+  color: #8e8e93;
 }
 .pm-tab-on {
-  color: #7ba4ff;
+  color: #4da2ff;
 }
 
 /* features */
@@ -536,7 +536,7 @@
 .feature-list svg {
   color: var(--laccent);
   flex-shrink: 0;
-  background: rgba(47, 107, 255, 0.1);
+  background: rgba(10, 132, 255, 0.1);
   border-radius: 50%;
   padding: 3px;
 }
@@ -549,12 +549,12 @@
 /* mini mocks */
 .mini {
   width: min(400px, 100%);
-  background: #14151b;
-  border: 1px solid #23252e;
+  background: #000000;
+  border: 1px solid #222225;
   border-radius: 22px;
   padding: 20px;
   box-shadow: 0 30px 70px rgba(11, 15, 40, 0.28);
-  color: #f3f4f6;
+  color: #ffffff;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -574,16 +574,16 @@
 .mini-head {
   font-size: 9px;
   font-weight: 800;
-  color: #6d7280;
+  color: #8e8e93;
   letter-spacing: 0.08em;
 }
 .mini-badge {
   width: 30px;
   height: 30px;
   border-radius: 9px;
-  background: #1e2028;
-  border: 1px solid #2b2e39;
-  color: #a3a8b3;
+  background: #1c1c1e;
+  border: 1px solid #2c2c2e;
+  color: #8e8e93;
   font-weight: 800;
   font-size: 12px;
   display: flex;
@@ -596,14 +596,14 @@
   border-color: rgba(245, 158, 11, 0.35);
 }
 .mini-prev {
-  color: #6d7280;
+  color: #8e8e93;
   font-weight: 600;
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
 .mini-input {
-  background: #0e0f13;
-  border: 1px solid #2b2e39;
+  background: #000000;
+  border: 1px solid #2c2c2e;
   border-radius: 9px;
   text-align: center;
   padding: 7px 0;
@@ -614,7 +614,7 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  border: 2px solid #2b2e39;
+  border: 2px solid #2c2c2e;
   color: transparent;
   display: flex;
   align-items: center;
@@ -623,8 +623,8 @@
   margin: 0 auto;
 }
 .mini-check.on {
-  background: #2f6bff;
-  border-color: #2f6bff;
+  background: #0a84ff;
+  border-color: #0a84ff;
   color: #fff;
 }
 .mini-rest {
@@ -632,16 +632,16 @@
   align-items: center;
   gap: 8px;
   background: #1a1c24;
-  border: 1px solid #2b2e39;
+  border: 1px solid #2c2c2e;
   border-radius: 12px;
   padding: 10px 13px;
   font-size: 12px;
   font-weight: 700;
-  color: #a3a8b3;
+  color: #8e8e93;
 }
 .mini-rest-btns {
   margin-left: auto;
-  color: #6d7280;
+  color: #8e8e93;
   font-size: 11px;
 }
 .mini-chart {
@@ -663,8 +663,8 @@
   border-radius: 5px 5px 2px 2px;
 }
 .mini-bar.last {
-  background: #2f6bff;
-  box-shadow: 0 0 18px rgba(47, 107, 255, 0.55);
+  background: #0a84ff;
+  box-shadow: 0 0 18px rgba(10, 132, 255, 0.55);
 }
 .mini-pr {
   display: flex;
@@ -683,7 +683,7 @@
   align-items: center;
   gap: 11px;
   background: #191b22;
-  border: 1px solid #23252e;
+  border: 1px solid #222225;
   border-radius: 14px;
   padding: 12px 14px;
   font-size: 13px;
@@ -704,7 +704,7 @@
   font-size: 13px;
 }
 .mini-sub {
-  color: #6d7280;
+  color: #8e8e93;
   font-size: 11px;
   margin-top: 2px;
 }
@@ -718,7 +718,7 @@
   font-weight: 800;
 }
 .mini-heart.off {
-  color: #6d7280;
+  color: #8e8e93;
 }
 
 /* devices section */
@@ -781,7 +781,7 @@
   font-size: clamp(40px, 5vw, 58px);
   font-weight: 600;
   letter-spacing: 0.005em;
-  color: #7ba4ff;
+  color: #4da2ff;
 }
 .stats-band span {
   color: #9aa1b0;
@@ -871,7 +871,7 @@
 
 /* CTA band */
 .cta-band {
-  background: #0b0c0f;
+  background: #000000;
   color: #fff;
   text-align: center;
   padding: clamp(60px, 8vw, 110px) 24px;
@@ -889,7 +889,7 @@
 }
 .btn-cta-light {
   background: #fff;
-  color: #0b0c0f;
+  color: #000000;
 }
 .btn-cta-light:hover {
   box-shadow: 0 10px 30px rgba(255, 255, 255, 0.25);
@@ -897,7 +897,7 @@
 
 /* footer */
 .lfooter {
-  background: #0e0f13;
+  background: #000000;
   color: #d7dae2;
   padding: clamp(40px, 6vw, 70px) clamp(18px, 5vw, 56px) 30px;
 }
@@ -948,7 +948,7 @@
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  color: #6d7280;
+  color: #8e8e93;
   font-size: 13px;
 }
 .lfooter-bottom a {
@@ -996,7 +996,7 @@
   transition: border-color 0.15s ease-out, transform 0.15s ease-out;
 }
 .dl-card:hover {
-  border-color: #2f6bff;
+  border-color: #0a84ff;
   transform: translateY(-2px);
 }
 .dl-icon {
@@ -1013,7 +1013,7 @@
   background: #22c55e;
 }
 .dl-icon-web {
-  background: #2f6bff;
+  background: #0a84ff;
 }
 .dl-main {
   flex: 1;
@@ -1051,4 +1051,126 @@
 /* larger outline button to balance the primary CTA in the hero */
 .btn-outline-lg {
   padding: 18px 30px;
+}
+
+/* ================= v1.1 LANDING UPDATES (Hevy palette) ================= */
+
+/* hero version pill */
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #3d4757;
+  background: #eef3fb;
+  border: 1px solid rgba(10, 132, 255, 0.25);
+  border-radius: 999px;
+  padding: 6px 14px;
+  margin-bottom: 18px;
+}
+.hero-pill-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #0a84ff;
+  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.18);
+  flex-shrink: 0;
+}
+
+/* routines mock (Workout tab, Hevy cards) */
+.rm-folder {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8e8e93;
+}
+.rm-folder span {
+  color: #8e8e93;
+}
+.rm-card {
+  background: #1c1c1e;
+  border-radius: 14px;
+  padding: 13px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.rm-card strong {
+  font-size: 14px;
+  color: #ffffff;
+}
+.rm-prev {
+  font-size: 11px;
+  color: #8e8e93;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rm-start {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #0a84ff;
+  color: #ffffff;
+  border-radius: 9px;
+  padding: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+.rm-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1.5px dashed #3a3a3c;
+  border-radius: 11px;
+  padding: 9px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #0a84ff;
+}
+
+/* phone mock: Hevy 3-tab bar with the active pill */
+.pm-tabbar {
+  background: #121214;
+  border-top: 1px solid #222225;
+  margin-top: auto;
+  margin-left: -14px;
+  margin-right: -14px;
+  margin-bottom: -12px;
+  padding: 7px 10px 6px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 4px;
+}
+.pm-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-size: 7.5px;
+  font-weight: 700;
+  color: #8e8e93;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.pm-tab-on {
+  color: #0a84ff;
+  background: rgba(10, 132, 255, 0.16);
+}
+.pm-homebar {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3.5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
 }
