@@ -40,7 +40,7 @@ function loadState(accountId: string): AppState {
       ...freshState(parsed.settings?.name),
       ...parsed,
       dataset: DATASET_EXERCISES,
-      posts: Array.isArray(parsed.posts) && parsed.posts.length > 0 ? parsed.posts : samplePosts(),
+      posts: parsed.posts ?? samplePosts(),
       contacts: parsed.contacts ?? [],
       followedHandles: parsed.followedHandles ?? ['mayalifts'],
       settings: { ...DEFAULT_SETTINGS, ...(parsed.settings ?? {}) },
@@ -236,6 +236,14 @@ export function reducer(state: AppState, action: Action): AppState {
     case 'importSharedPost': {
       const post = codeToPost(action.code)
       if (!post) return state
+      // the same share link can be opened twice — import it only once
+      const dup = state.posts.some(
+        (p) =>
+          p.author.handle === post.author.handle &&
+          p.workout.name === post.workout.name &&
+          p.createdAt === post.createdAt
+      )
+      if (dup) return state
       const handle = post.author.handle
       const known = state.contacts.some((c) => c.handle === handle)
       const contacts = known

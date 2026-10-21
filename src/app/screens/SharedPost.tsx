@@ -1,17 +1,15 @@
 import { useMemo, useState } from 'react'
-import { session } from '../../lib/auth'
 import { codeToPost } from '../../lib/share'
 import type { Post } from '../../lib/types'
 import { Icon } from '../../components/icons'
 import { Avatar } from '../../components/ui'
-import { fmtDuration, fmtVolume } from '../../lib/utils'
+import { fmtVolume } from '../../lib/utils'
 import { Logo } from '../../components/icons'
 
 /** Public viewer for `#/shared?d=CODE` links — no account needed to look. */
 export default function SharedPost({ code }: { code: string }) {
   const post = useMemo<Post | null>(() => codeToPost(code), [code])
   const [added, setAdded] = useState(false)
-  const [error, setError] = useState('')
 
   const add = () => {
     // stash the code; the app consumes it on next open while signed in
@@ -32,7 +30,7 @@ export default function SharedPost({ code }: { code: string }) {
           </div>
           <h1>This link doesn’t work</h1>
           <p>The share code is missing or damaged. Ask your friend to send a fresh link.</p>
-          <a className="btn btn-ghost" href="#/">
+          <a className="btn btn-ghost" href="#/app">
             Go to REA Fit
           </a>
         </div>
@@ -68,7 +66,7 @@ export default function SharedPost({ code }: { code: string }) {
             <Icon name="clock" size={13} /> {w.durationMin} min
           </span>
           <span>
-            <Icon name="chart" size={13} /> {fmtDuration(w.durationMin * 60000)}
+            <Icon name="chart" size={13} /> {w.exercises.length} exercises
           </span>
         </div>
         <div className="shared-exercises">
@@ -84,10 +82,15 @@ export default function SharedPost({ code }: { code: string }) {
           ))}
         </div>
         {added ? (
-          <div className="shared-added">
-            <Icon name="check" size={18} />
-            <span>Saved. Open the app to see it in your feed.</span>
-          </div>
+          <>
+            <div className="shared-added">
+              <Icon name="check" size={18} />
+              <span>Saved. It’ll be in your feed.</span>
+            </div>
+            <a className="btn btn-primary btn-lg" href="#/app">
+              Open the app
+            </a>
+          </>
         ) : (
           <button className="btn btn-primary btn-lg" onClick={add}>
             <Icon name="plus" size={18} /> Add to my feed
@@ -98,9 +101,8 @@ export default function SharedPost({ code }: { code: string }) {
             ? 'If you’re not signed in yet, the app will ask first — the post waits for you.'
             : 'Free, no account needed to peek. Adding it to a feed uses your local account.'}
         </p>
-        {error && <p className="login-error">{error}</p>}
-        <a className="link-btn" href="#/">
-          Try REA Fit — free forever
+        <a className="link-btn" href="#/app">
+          Open REA Fit — free forever
         </a>
       </div>
     </div>

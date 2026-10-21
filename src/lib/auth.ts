@@ -161,11 +161,16 @@ export function clearSession() {
 /**
  * One-time migration: anyone arriving with data under the legacy key keeps
  * every bit of it as the guest account. Runs on app bootstrap.
+ *
+ * Returns GUEST_ID only on the single run that actually performed the
+ * migration — so a user who later logs out still reaches the login page
+ * instead of being silently signed back in as guest on every reload.
  */
 export function migrateLegacy(): string | null {
   const legacy = storage.get(LEGACY_KEY)
-  const accounts = listAccounts()
   if (!legacy) return null
+
+  const accounts = listAccounts()
   if (!accounts.some((a) => a.id === GUEST_ID)) {
     let name = 'Athlete'
     try {
@@ -186,8 +191,44 @@ export function migrateLegacy(): string | null {
     }
     saveAccounts([...accounts, guest])
   }
+
+  let migratedNow = false
   if (!storage.get(dataKey(GUEST_ID))) {
     storage.set(dataKey(GUEST_ID), legacy)
+    migratedNow = true
   }
-  return GUEST_ID
+  // the data now lives under the guest's own key; the legacy key has served
+  // its purpose and must never trigger another auto-signin
+  storage.del(LEGACY_KEY)
+  return migratedNow ? GUEST_ID : null
+}
+
+/**
+ * Turn the guest account into a real, password-protected account *in place*:
+ * same id, same data key — so every workout logged as a guest carries over.
+ * This is the "sign up without losing my data" path.
+ */
+export async function upgradeGuestAccount(opts: {
+  name: string
+  handle?: string
+  email?: string
+  password: string
+}): Promise<Account | null> {
+  const accounts = listAccounts()
+  const guest = accounts.find((a) => a.id === GUEST_ID && a.kind === 'guest')
+  if (!guest) return null
+  const name = opts.name.trim() || guest.name
+  const salt = randomSalt()
+  const hash = await hashPassword(opts.password, salt)
+  const upgraded: Account = {
+    ...guest,
+    name,
+    handle: uniqueHandle(opts.handle || name),
+    email: opts.email?.trim() ?? '',
+    kind: 'local',
+    salt,
+    hash,
+  }
+  saveAccounts(accounts.map((a) => (a.id === GUEST_ID ? upgraded : a)))
+  return upgraded
 }

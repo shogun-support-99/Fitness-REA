@@ -83,9 +83,10 @@ function PostCard({ post, unit }: { post: Post; unit: 'kg' | 'lb' }) {
   const w = post.workout
   const isMe = post.author.kind === 'me'
   const isAthlete = post.author.kind === 'athlete'
+  const contact = state.contacts.find((c) => c.handle === post.author.handle)
   const following = isAthlete
     ? state.followedHandles.includes(post.author.handle)
-    : state.contacts.find((c) => c.handle === post.author.handle)?.followed ?? false
+    : contact?.followed ?? false
 
   const sharePost = () => {
     const link = sharedPostLink(postToCode(post))
@@ -110,16 +111,13 @@ function PostCard({ post, unit }: { post: Post; unit: 'kg' | 'lb' }) {
             @{post.author.handle} · {timeAgo(post.createdAt)}
           </span>
         </div>
-        {!isMe && (
+        {!isMe && (isAthlete || contact) && (
           <button
             className={`btn btn-sm ${following ? 'btn-ghost' : 'btn-follow'}`}
             onClick={() =>
               isAthlete
                 ? dispatch({ t: 'toggleFollowHandle', handle: post.author.handle })
-                : dispatch({
-                    t: 'toggleContactFollow',
-                    id: state.contacts.find((c) => c.handle === post.author.handle)?.id ?? '',
-                  })
+                : dispatch({ t: 'toggleContactFollow', id: contact!.id })
             }
           >
             {following ? 'Following' : 'Follow'}

@@ -146,10 +146,22 @@ import { encodeShared, decodeShared, codeToPost } from '../src/lib/share'
 const code = encodeShared(sharedPost.author, sharedPost.workout, sharedPost.createdAt)
 const decoded = decodeShared(code)
 check('share code round-trips', decoded !== null && decoded.workout.name === sharedPost.workout.name)
-const importCount0 = s.posts.length
+/* importing a link to a post you already have must not duplicate it */
+const beforeSelfImport = s.posts.length
 s = reducer(s, { t: 'importSharedPost', code })
+check('import of own post dedupes', s.posts.length === beforeSelfImport)
+/* a foreign share imports once, then dedupes on repeat */
+const friendCode = encodeShared(
+  { name: 'Riya Patel', handle: 'riya.lifts', color: '#a855f7' },
+  { name: 'Pull Day', startedAt: Date.now() - 3600000, durationMin: 55, volumeKg: 7200, exercises: [{ name: 'Deadlift', sets: [{ weight: 140, reps: 3 }] }] },
+  Date.now() - 3600000
+)
+const importCount0 = s.posts.length
+s = reducer(s, { t: 'importSharedPost', code: friendCode })
 check('import adds post', s.posts.length === importCount0 + 1)
-check('import creates followed contact', s.contacts.some((c) => c.handle === sharedPost.author.handle && c.followed === true))
+check('import creates followed contact', s.contacts.some((c) => c.handle === 'riya.lifts' && c.followed === true))
+s = reducer(s, { t: 'importSharedPost', code: friendCode })
+check('repeat import dedupes', s.posts.length === importCount0 + 1)
 const bad = codeToPost('garbage!!')
 check('bad share code rejected', bad === null)
 
