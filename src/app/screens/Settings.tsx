@@ -26,7 +26,6 @@ export default function Settings() {
   const [pane, setPane] = useState<Pane>(null)
   const [nameDraft, setNameDraft] = useState(settings.name)
   const [confirmClear, setConfirmClear] = useState(false)
-  const [restDraft, setRestDraft] = useState(settings.defaultRest)
 
   const importFile = (f: File) => {
     const reader = new FileReader()
@@ -95,7 +94,9 @@ export default function Settings() {
         </div>
 
         <p className="st-foot muted small">
-          REA Fit v1.1 · free forever, no ads · your data never leaves this device.
+          REA Fit v1.1.0 · free forever, no ads · your data never leaves this device.
+          <br />
+          Exercise data: exercises-dataset (MIT) · media © Gym visual
         </p>
       </div>
 
@@ -205,21 +206,23 @@ export default function Settings() {
             <span>Default rest</span>
             <div className="stepper">
               <button
-                onClick={() => {
-                  const v = Math.max(15, restDraft - 15)
-                  setRestDraft(v)
-                  dispatch({ t: 'settings', patch: { defaultRest: v } })
-                }}
+                onClick={() =>
+                  dispatch({
+                    t: 'settings',
+                    patch: { defaultRest: Math.max(15, settings.defaultRest - 15) },
+                  })
+                }
               >
                 −
               </button>
-              <span>{fmtRest(restDraft)}</span>
+              <span>{fmtRest(settings.defaultRest)}</span>
               <button
-                onClick={() => {
-                  const v = Math.min(300, restDraft + 15)
-                  setRestDraft(v)
-                  dispatch({ t: 'settings', patch: { defaultRest: v } })
-                }}
+                onClick={() =>
+                  dispatch({
+                    t: 'settings',
+                    patch: { defaultRest: Math.min(300, settings.defaultRest + 15) },
+                  })
+                }
               >
                 +
               </button>

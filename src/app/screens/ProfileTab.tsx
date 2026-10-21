@@ -8,6 +8,7 @@ import { FeedPosts } from './FeedTab'
 import { getAccount, session } from '../../lib/auth'
 import {
   fmtVolume,
+  ordinal,
   timeAgo,
   weekStart,
   workoutStreak,
@@ -89,7 +90,14 @@ export default function ProfileTab() {
       <header className="page-head hv-topbar">
         <h1 className="hv-username">{account?.handle ?? settings.name}</h1>
         <div className="head-actions">
-          <button className="icon-btn" aria-label="Edit profile" onClick={() => setNameOpen(true)}>
+          <button
+            className="icon-btn"
+            aria-label="Edit profile"
+            onClick={() => {
+              setNameDraft(settings.name)
+              setNameOpen(true)
+            }}
+          >
             <Icon name="edit" size={20} />
           </button>
           <button className="icon-btn" aria-label="Share app" onClick={shareProfile}>
@@ -203,7 +211,7 @@ export default function ProfileTab() {
                 <button className="hv-feed-main" onClick={() => ui.push({ k: 'workout', id: w.id })}>
                   <strong>{settings.name}</strong>
                   <span className="hv-feed-badge">
-                    <Icon name="dumbbell" size={11} /> {nth} workout
+                    <Icon name="dumbbell" size={11} /> {ordinal(nth)} workout
                   </span>
                   <span className="hv-feed-date">
                     {timeAgo(w.start)} · {fmtVolume(workoutVolume(w), unit)} {unit} ·{' '}

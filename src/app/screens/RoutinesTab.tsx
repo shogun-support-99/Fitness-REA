@@ -66,7 +66,7 @@ function FolderSection({
   defaultOpen?: boolean
   onMenu: (r: Routine) => void
 }) {
-  const { dispatch } = useStore()
+  const { state, dispatch } = useStore()
   const ui = useUI()
   const [open, setOpen] = useState(defaultOpen)
   const [folderMenu, setFolderMenu] = useState(false)
@@ -157,7 +157,20 @@ function FolderSection({
               <button
                 className="btn btn-primary btn-lg"
                 onClick={() => {
-                  dispatch({ t: 'renameFolder', from: name, to: renameVal })
+                  const to = renameVal.trim()
+                  if (!to) {
+                    ui.toast('Enter a folder name first')
+                    return
+                  }
+                  if (to === name) {
+                    setRenameOpen(false)
+                    return
+                  }
+                  if (state.folders.includes(to)) {
+                    ui.toast('A folder with that name already exists')
+                    return
+                  }
+                  dispatch({ t: 'renameFolder', from: name, to })
                   setRenameOpen(false)
                   ui.toast('Folder renamed')
                 }}
@@ -265,7 +278,14 @@ export default function RoutinesTab() {
             className="btn btn-primary btn-lg"
             onClick={() => {
               const name = folderName.trim()
-              if (!name) return
+              if (!name) {
+                ui.toast('Enter a folder name first')
+                return
+              }
+              if (state.folders.includes(name)) {
+                ui.toast('A folder with that name already exists')
+                return
+              }
               dispatch({ t: 'addFolder', name })
               setFolderName('')
               setNewFolderOpen(false)
