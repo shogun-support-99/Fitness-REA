@@ -225,19 +225,6 @@ export default function ProfileTab() {
               e.target.value = ''
             }}
           />
-          <button
-            className="setting-row setting-btn"
-            disabled={state.sampleLoaded}
-            onClick={() => {
-              dispatch({ t: 'loadSample' })
-              ui.toast('Sample data loaded')
-            }}
-          >
-            <span>
-              <Icon name="layers" size={16} /> Load sample data
-            </span>
-            {state.sampleLoaded ? <span className="muted small">loaded</span> : <Icon name="chevronRight" size={14} className="muted" />}
-          </button>
           <button className="setting-row setting-btn danger" onClick={() => setConfirmClear(true)}>
             <span>
               <Icon name="trash" size={16} /> Clear all data

@@ -68,8 +68,8 @@ export default function FeedTab() {
       </div>
 
       <p className="muted small feed-note">
-        Your shares, your contacts and a few demo athletes. Share a workout, copy the link, send it
-        to a friend — it lands in their feed when they open it.
+        Your shares, your contacts and the athletes you follow. Share a workout, copy the link,
+        send it to a friend — it lands in their feed when they open it.
       </p>
     </div>
   )

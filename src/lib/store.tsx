@@ -5,7 +5,7 @@ import { DATASET_EXERCISES } from '../data/exercises-dataset'
 import { dataKey } from './auth'
 import { codeToPost } from './share'
 import { uid } from './utils'
-import { samplePosts, sampleRoutines, sampleWorkouts } from './seed'
+import { samplePosts } from './seed'
 
 const DEFAULT_SETTINGS: Settings = {
   name: 'Athlete',
@@ -27,7 +27,6 @@ export function freshState(name = 'Athlete'): AppState {
     posts: samplePosts(),
     contacts: [],
     followedHandles: ['mayalifts'],
-    sampleLoaded: false,
   }
 }
 
@@ -62,7 +61,6 @@ export type Action =
   | { t: 'addCustomExercise'; exercise: Exercise }
   | { t: 'deleteCustomExercise'; id: string }
   | { t: 'settings'; patch: Partial<Settings> }
-  | { t: 'loadSample' }
   | { t: 'clearAll' }
   | { t: 'importData'; state: AppState }
   | { t: 'likePost'; id: string }
@@ -161,15 +159,6 @@ export function reducer(state: AppState, action: Action): AppState {
       return { ...state, customs: state.customs.filter((e) => e.id !== action.id) }
     case 'settings':
       return { ...state, settings: { ...state.settings, ...action.patch } }
-    case 'loadSample': {
-      if (state.sampleLoaded) return state
-      return {
-        ...state,
-        workouts: [...sampleWorkouts(), ...state.workouts],
-        routines: [...state.routines, ...sampleRoutines()],
-        sampleLoaded: true,
-      }
-    }
     case 'clearAll':
       return freshState(state.settings.name)
     case 'importData':

@@ -87,6 +87,17 @@ export default function Home() {
         </div>
       </div>
 
+      <button className="card bd-entry" onClick={() => ui.push({ k: 'bodyDist' })}>
+        <div className="bd-entry-icon">
+          <Icon name="target" size={20} />
+        </div>
+        <div className="bd-entry-main">
+          <strong>Body distribution</strong>
+          <span>Sets by muscle — {thisWeek.length > 0 ? 'see this week' : 'opens empty until you train'}</span>
+        </div>
+        <Icon name="chevronRight" size={16} className="row-chevron" />
+      </button>
+
       {active ? (
         <button
           className="btn btn-primary btn-lg continue-btn"
@@ -136,27 +147,7 @@ export default function Home() {
         </div>
         {workouts.length === 0 ? (
           <div className="card empty-inline">
-            {state.sampleLoaded ? (
-              <>
-                <p>No workouts yet — your first one is one tap away.</p>
-              </>
-            ) : (
-              <>
-                <p>
-                  <strong>New here?</strong> Load sample data to explore the app, or start from a
-                  blank slate.
-                </p>
-                <button
-                  className="btn btn-ghost"
-                  onClick={() => {
-                    dispatch({ t: 'loadSample' })
-                    ui.toast('Sample data loaded')
-                  }}
-                >
-                  Load sample data
-                </button>
-              </>
-            )}
+            <p>No workouts yet — your first one is one tap away.</p>
           </div>
         ) : (
           <div className="list">

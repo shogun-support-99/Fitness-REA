@@ -168,10 +168,12 @@ render('Landing', <Landing />)
 
 import Login from '../src/app/screens/Login'
 import Contacts from '../src/app/screens/Contacts'
+import BodyDistribution from '../src/app/screens/BodyDistribution'
 import SharedPost from '../src/app/screens/SharedPost'
 import { encodeShared } from '../src/lib/share'
 render('Login', <Login onDone={() => {}} />)
 render('Contacts', wrap(<Contacts />))
+render('BodyDistribution', wrap(<BodyDistribution />))
 const demoCode = encodeShared(
   { name: 'Maya Reyes', handle: 'maya.reyes', color: '#2f6bff' },
   {
